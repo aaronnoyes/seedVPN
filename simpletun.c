@@ -309,6 +309,8 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
+    do_debug("Server received connection");
+
   }
 
   /* socket is the fd for client and server */
@@ -346,7 +348,11 @@ int main(int argc, char *argv[]) {
       /* write length + packet */
       //plength = htons(nread);
       //nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
-      nwrite = cwrite(net_fd, buffer, nread);
+      //nwrite = cwrite(net_fd, buffer, nread);
+      if (sendto(sock_fd, buffer, nread, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
+        perror("sendto()");
+        exit(1);
+      }
       
       do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
     }
