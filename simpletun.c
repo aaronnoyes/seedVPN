@@ -195,6 +195,8 @@ int main(int argc, char *argv[]) {
   int cliserv = -1;    /* must be specified on cmd line */
   unsigned long int tap2net = 0, net2tap = 0;
 
+  char buf[BUFSIZE];
+
   progname = argv[0];
   
   /* Check command line options */
@@ -273,14 +275,13 @@ int main(int argc, char *argv[]) {
     remote.sin_addr.s_addr = inet_addr(remote_ip);
     remote.sin_port = htons(port);
 
-    /* connection request */
-    // if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
-    //   perror("connect()");
-    //   exit(1);
-    // }
+    /* send buffer to server so that we can initialize */
+    if (sendto(sock_fd, buf, BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
+      perror("sendto()");
+      exit(1);
+    }
 
-    net_fd = sock_fd;
-    // do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
+    do_debug("Client sent blank buffer to connect to server");
     
   } else {
     /* Server, wait for connections */
@@ -300,28 +301,18 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
      
-  //   if (listen(sock_fd, 5) < 0){
-  //     perror("listen()");
-  //     exit(1);
-  //   }
-    
-  //   /* wait for connection request */
-  //   remotelen = sizeof(remote);
-  //   memset(&remote, 0, remotelen);
-  //   if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
-  //     perror("accept()");
-  //     exit(1);
-  //   }
     remotelen = sizeof(remote);
     memset(&remote, 0, remotelen);
-    char buf[BUFSIZE];
-    if (net_fd = recvfrom(sock_fd, buf, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
+
+    if (recvfrom(sock_fd, buf, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
       perror("recvfrom()");
       exit(1);
     }
 
-  //   do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
   }
+
+  /* socket is the fd for client and server */
+  net_fd = sock_fd;
   
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
