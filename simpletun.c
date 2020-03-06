@@ -281,7 +281,7 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    do_debug("Client sent blank buffer to connect to server");
+    do_debug("Client sent blank buffer to connect to server\n");
     
   } else {
     /* Server, wait for connections */
@@ -309,7 +309,7 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    do_debug("Server received connection");
+    do_debug("Server received connection\n");
 
   }
 
@@ -345,10 +345,7 @@ int main(int argc, char *argv[]) {
       tap2net++;
       do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", tap2net, nread);
 
-      /* write length + packet */
-      //plength = htons(nread);
-      //nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
-      //nwrite = cwrite(net_fd, buffer, nread);
+      /* write send packet over network*/
       if ((nwrite = sendto(sock_fd, buffer, nread, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
         perror("sendto()");
         exit(1);
@@ -358,26 +355,23 @@ int main(int argc, char *argv[]) {
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      /* data from the network: read it, and write it to the tun/tap interface. 
-       * We need to read the length first, and then the packet */
-
-      /* Read length */      
-      // nread = read_n(net_fd, (char *)&plength, sizeof(plength));
-      // if(nread == 0) {
-      //   /* ctrl-c at the other end */
-      //   break;
-      // }
+      /* data from the network: read it, and write it to the tun/tap interface. */
 
       net2tap++;
 
       /* read packet */
-      // nread = read_n(net_fd, buffer, ntohs(plength));
       remotelen = sizeof(remote);
       memset(&remote, 0, remotelen);
       if ((nread = recvfrom(sock_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen)) < 0) {
         perror("recvfrom()");
         exit(1);
       }
+
+      if(nread == 0) {
+        /* ctrl-c at the other end */
+        break;
+      }
+
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
 
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
