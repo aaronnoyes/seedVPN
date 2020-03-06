@@ -312,6 +312,13 @@ int main(int argc, char *argv[]) {
   //     perror("accept()");
   //     exit(1);
   //   }
+    remotelen = sizeof(remote);
+    memset(&remote, 0, remotelen);
+    char buf[BUFSIZE];
+    if (recvfrom(local, buf, BUFSIZE, 0, &remote, &remotelen)==-1) {
+      perror("recvfrom()");
+      exit(1);
+    }
 
   //   do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
   }
