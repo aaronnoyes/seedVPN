@@ -314,7 +314,7 @@ int main(int argc, char *argv[]) {
   //   }
 
   //   do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
-  // }
+  }
   
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
