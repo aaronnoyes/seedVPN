@@ -259,7 +259,7 @@ int main(int argc, char *argv[]) {
 
   do_debug("Successfully connected to interface %s\n", if_name);
 
-  if ( (sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
     perror("socket()");
     exit(1);
   }
@@ -274,13 +274,13 @@ int main(int argc, char *argv[]) {
     remote.sin_port = htons(port);
 
     /* connection request */
-    if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
-      perror("connect()");
-      exit(1);
-    }
+    // if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
+    //   perror("connect()");
+    //   exit(1);
+    // }
 
-    net_fd = sock_fd;
-    do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
+    // net_fd = sock_fd;
+    // do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
     
   } else {
     /* Server, wait for connections */
@@ -299,22 +299,22 @@ int main(int argc, char *argv[]) {
       perror("bind()");
       exit(1);
     }
+     
+  //   if (listen(sock_fd, 5) < 0){
+  //     perror("listen()");
+  //     exit(1);
+  //   }
     
-    if (listen(sock_fd, 5) < 0){
-      perror("listen()");
-      exit(1);
-    }
-    
-    /* wait for connection request */
-    remotelen = sizeof(remote);
-    memset(&remote, 0, remotelen);
-    if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
-      perror("accept()");
-      exit(1);
-    }
+  //   /* wait for connection request */
+  //   remotelen = sizeof(remote);
+  //   memset(&remote, 0, remotelen);
+  //   if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
+  //     perror("accept()");
+  //     exit(1);
+  //   }
 
-    do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
-  }
+  //   do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
+  // }
   
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
