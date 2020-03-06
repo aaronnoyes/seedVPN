@@ -279,7 +279,7 @@ int main(int argc, char *argv[]) {
     //   exit(1);
     // }
 
-    // net_fd = sock_fd;
+    net_fd = sock_fd;
     // do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
     
   } else {
