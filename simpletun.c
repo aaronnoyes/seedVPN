@@ -349,7 +349,7 @@ int main(int argc, char *argv[]) {
       //plength = htons(nread);
       //nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
       //nwrite = cwrite(net_fd, buffer, nread);
-      if (sendto(sock_fd, buffer, nread, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
+      if (nwrite = sendto(sock_fd, buffer, nread, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
         perror("sendto()");
         exit(1);
       }
@@ -362,16 +362,22 @@ int main(int argc, char *argv[]) {
        * We need to read the length first, and then the packet */
 
       /* Read length */      
-      nread = read_n(net_fd, (char *)&plength, sizeof(plength));
-      if(nread == 0) {
-        /* ctrl-c at the other end */
-        break;
-      }
+      // nread = read_n(net_fd, (char *)&plength, sizeof(plength));
+      // if(nread == 0) {
+      //   /* ctrl-c at the other end */
+      //   break;
+      // }
 
       net2tap++;
 
       /* read packet */
-      nread = read_n(net_fd, buffer, ntohs(plength));
+      // nread = read_n(net_fd, buffer, ntohs(plength));
+      remotelen = sizeof(remote);
+      memset(&remote, 0, remotelen);
+      if (nread = recvfrom(sock_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
+        perror("recvfrom()");
+        exit(1);
+      }
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
 
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
