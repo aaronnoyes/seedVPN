@@ -315,7 +315,7 @@ int main(int argc, char *argv[]) {
     remotelen = sizeof(remote);
     memset(&remote, 0, remotelen);
     char buf[BUFSIZE];
-    if (recvfrom(local, buf, BUFSIZE, 0, &remote, &remotelen)==-1) {
+    if (net_fd = recvfrom(sock_fd, buf, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
       perror("recvfrom()");
       exit(1);
     }
