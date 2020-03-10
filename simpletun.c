@@ -356,7 +356,7 @@ int main(int argc, char *argv[]) {
       /* data from tun/tap: just read it and write it to the network */
 
       int len;
-      unsigned char ciphertext[128];
+      unsigned char ciphertext[BUFSIZE];
       int ciphertext_len;
 
       /* use aes-256 in CBC mode for encyption*/
@@ -371,6 +371,7 @@ int main(int argc, char *argv[]) {
       tap2net++;
       do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", tap2net, nread);
 
+  
       /* encrypt plaintext */
       if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, buffer, nread)) {
         ERR_print_errors_fp(stderr);
@@ -398,7 +399,7 @@ int main(int argc, char *argv[]) {
       /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
 
       int len;
-      unsigned char plaintext[128];
+      unsigned char plaintext[BUFSIZE];
       int plaintext_len;
 
       /* use aes-256 in CBC mode for decryption */
