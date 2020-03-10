@@ -355,7 +355,7 @@ int main(int argc, char *argv[]) {
       unsigned char ciphertext[128];
       int ciphertext_len;
 
-      /* use aes-256 in CBC mode */
+      /* use aes-256 in CBC mode for encyption*/
       if(EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1) {
         ERR_print_errors_fp(stderr);
         abort();
@@ -391,7 +391,17 @@ int main(int argc, char *argv[]) {
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      /* data from the network: read it, and write it to the tun/tap interface. */
+      /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
+
+      int len;
+      unsigned char plaintext[128];
+      int plaintext_len;
+
+      /* use aes-256 in CBC mode for decryption */
+      if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1 ) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
 
       net2tap++;
 
@@ -408,10 +418,24 @@ int main(int argc, char *argv[]) {
         break;
       }
 
+      /* decrypt ciphertext from buffer */
+      if (EVP_DecryptUpdate(ctx, plaintext, &len, buffer, nread) != 1) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
+      plaintext_len = len;
+
+      if (EVP_DecryptFinal_ex(ctx, plaintext_len + len, &len) != 1) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
+      plaintext_len += len;
+      
+
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
 
-      /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
-      nwrite = cwrite(tap_fd, buffer, nread);
+      /* plaintext contains decrypted packet, write it into the tun/tap interface */ 
+      nwrite = cwrite(tap_fd, plaintext, plaintext_len);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
 
