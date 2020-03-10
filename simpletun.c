@@ -429,7 +429,7 @@ int main(int argc, char *argv[]) {
       }
       plaintext_len = len;
 
-      if (EVP_DecryptFinal_ex(ctx, plaintext_len + len, &len) != 1) {
+      if (EVP_DecryptFinal_ex(ctx, plaintext + len, &len) != 1) {
         ERR_print_errors_fp(stderr);
         abort();
       }
