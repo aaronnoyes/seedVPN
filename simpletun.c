@@ -38,6 +38,10 @@
 #include <errno.h>
 #include <stdarg.h>
 
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
+
 /* buffer for reading from tun/tap interface, must be >= 1500 */
 #define BUFSIZE 2000   
 #define CLIENT 0
@@ -322,6 +326,7 @@ int main(int argc, char *argv[]) {
   while(1) {
     int ret;
     fd_set rd_set;
+    EVP_CIPHER_CTX *ctx;
 
     FD_ZERO(&rd_set);
     FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
@@ -337,21 +342,52 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
+    /* initialize cipher context */
+    if(!(ctx = EVP_CIPHER_CTX_new())) {
+      ERR_print_errors_fp(stderr);
+      abort();
+    }
+
     if(FD_ISSET(tap_fd, &rd_set)){
       /* data from tun/tap: just read it and write it to the network */
+
+      int len;
+      unsigned char ciphertext[128];
+      int ciphertext_len;
+
+      /* use aes-256 in CBC mode */
+      if(EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
       
+      /*read plaintext from the tunnel */
       nread = cread(tap_fd, buffer, BUFSIZE);
 
       tap2net++;
       do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", tap2net, nread);
 
-      /* write send packet over network*/
-      if ((nwrite = sendto(sock_fd, buffer, nread, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
+      /* encrypt plaintext */
+      if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, buffer, nread)) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
+      ciphertext_len = len;
+
+      if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
+      ciphertext_len += len;
+
+      /* send ecnrypted packet packet over the network */
+      if ((nwrite = sendto(sock_fd, ciphertext, ciphertext_len, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
         perror("sendto()");
         exit(1);
       }
       
       do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
+
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
@@ -378,6 +414,9 @@ int main(int argc, char *argv[]) {
       nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
+
+    /* free cipher context */
+    EVP_CIPHER_CTX_free(ctx);
   }
   
   return(0);
