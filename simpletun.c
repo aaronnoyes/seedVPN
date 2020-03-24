@@ -367,6 +367,7 @@ int main(int argc, char *argv[]) {
         ERR_print_errors_fp(stderr);
         abort();
       }
+      do_debug("TAP2NET %lu: signed hmac\n");
 
       //encrypt plaintext
       cipher_len = encrypt_aes(buffer, nread, cipher, key, iv);
@@ -374,6 +375,7 @@ int main(int argc, char *argv[]) {
         ERR_print_errors_fp(stderr);
         abort();
       }
+      do_debug("TAP2NET %lu: encrypted plaintext\n");
 
       //copy hmac then cipher to buffer
       memcpy(buffer, hmac, HMAC_SIZE);
@@ -397,6 +399,7 @@ int main(int argc, char *argv[]) {
       char rec_hmac[HMAC_SIZE];
 
       net2tap++;
+      do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
 
       /* read packet */
       remotelen = sizeof(remote);
@@ -420,11 +423,11 @@ int main(int argc, char *argv[]) {
         ERR_print_errors_fp(stderr);
         abort();
       }
+      do_debug("NET2TAP %lu: decrypted cipher\n");
 
       //if the hmac matches the plaintext, move it along
       if (verify_hmac(plain, plain_len, rec_hmac, key)) {
-        do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
-
+        do_debug("NET2TAP %lu: verified HMAC\n");
         /* plaintext contains decrypted packet, write it into the tun/tap interface */ 
         nwrite = cwrite(tap_fd, plain, plain_len);
         do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
