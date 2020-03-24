@@ -43,6 +43,7 @@
 #include <openssl/err.h>
 
 #include "aes.h"
+#include "hmac.h"
 
 /* buffer for reading from tun/tap interface, must be >= 1500 */
 #define BUFSIZE 2000   
@@ -348,16 +349,24 @@ int main(int argc, char *argv[]) {
     }
 
     if(FD_ISSET(tap_fd, &rd_set)){
-      /* data from tun/tap: just read it and write it to the network */
+      /* data from tun/tap: read it, ecrypt it, and write it to the network */
 
       unsigned char cipher[BUFSIZE];
-      int cipher_len;
+      char hmac[HMAC_SIZE];
+      int cipher_len, hmac_len;
       
       /*read plaintext from the tunnel */
       nread = cread(tap_fd, buffer, BUFSIZE);
 
       tap2net++;
       do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", tap2net, nread);
+
+      //sign HMAC of message
+      hmac_len = sign_hmac(buffer, nread, hmac, key);
+      if (!hmac_len) {
+        ERR_print_errors_fp(stderr);
+        abort();
+      }
 
       //encrypt plaintext
       cipher_len = encrypt_aes(buffer, nread, cipher, key, iv);
@@ -366,8 +375,12 @@ int main(int argc, char *argv[]) {
         abort();
       }
 
+      //copy hmac then cipher to buffer
+      memcpy(buffer, hmac, HMAC_SIZE);
+      memcpy(buffer + HMAC_SIZE, cipher, cipher_len);
+
       /* send ecnrypted packet packet over the network */
-      if ((nwrite = sendto(sock_fd, cipher, cipher_len, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
+      if ((nwrite = sendto(sock_fd, buffer, cipher_len + BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
         perror("sendto()");
         exit(1);
       }
@@ -381,6 +394,7 @@ int main(int argc, char *argv[]) {
 
       unsigned char plain[BUFSIZE];
       int plain_len;
+      char rec_hmac[HMAC_SIZE];
 
       net2tap++;
 
@@ -397,18 +411,26 @@ int main(int argc, char *argv[]) {
         break;
       }
 
-      plain_len = decrypt_aes(buffer, nread, plain, key, iv);
+      //read the received hmac
+      memcpy(rec_hmac, buffer, HMAC_SIZE);
+
+      //decrypt incoming network traffic
+      plain_len = decrypt_aes(buffer + HMAC_SIZE, nread - HMAC_SIZE, plain, key, iv);
       if (!plain_len) {
         ERR_print_errors_fp(stderr);
         abort();
       }
+
+      //if the hmac matches the plaintext, move it along
+      if (verify_hmac(plain, plain_len, rec_hmac, key)) {
+        do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
+
+        /* plaintext contains decrypted packet, write it into the tun/tap interface */ 
+        nwrite = cwrite(tap_fd, plain, plain_len);
+        do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
+      }
+
       
-
-      do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
-
-      /* plaintext contains decrypted packet, write it into the tun/tap interface */ 
-      nwrite = cwrite(tap_fd, plain, plain_len);
-      do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
 
   }
