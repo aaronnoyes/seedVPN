@@ -382,7 +382,7 @@ int main(int argc, char *argv[]) {
       memcpy(buffer + HMAC_SIZE, cipher, cipher_len);
 
       /* send ecnrypted packet packet over the network */
-      if ((nwrite = sendto(sock_fd, buffer, cipher_len + BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
+      if ((nwrite = sendto(sock_fd, buffer, cipher_len + HMAC_SIZE, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
         perror("sendto()");
         exit(1);
       }
