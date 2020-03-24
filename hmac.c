@@ -1,4 +1,5 @@
 #include <openssl/evp.h>
+#include <string.h>
 
 #include "hmac.h"
 
@@ -60,7 +61,7 @@ int sign_hmac(char *msg, int msg_len, char *hmac, char *key) {
 }
 
 int verify_hmac(char *msg, int msg_len, char *hmac, char *key) {
-    char *ver_hmac[HMAC_SIZE];
+    char ver_hmac[HMAC_SIZE];
 
     //sign the provided message and store it in ver_hmac
     //if that fails, fail
