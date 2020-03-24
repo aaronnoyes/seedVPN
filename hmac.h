@@ -1,7 +1,7 @@
 #include <openssl/evp.h>
 
-//sha256 outputs 64 bytes
-#define HMAC_SIZE 64
+//sha256 outputs 32 bytes
+#define HMAC_SIZE 32
 
 //sign_hmac(4)
 // msg - message to be hashed
