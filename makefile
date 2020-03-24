@@ -5,8 +5,8 @@ LIB=/usr/local/ssl/lib/
 
 all: simpletun hmac.o aes.o
 
-simpletun: simpletun.c aes.o
-	$(CC) -I$(INC) -L$(LIB) -o simpletun simpletun.c aes.o -lcrypto -ldl
+simpletun: simpletun.c aes.o hmac.o
+	$(CC) -I$(INC) -L$(LIB) -o simpletun simpletun.c aes.o hmac.o -lcrypto -ldl
 
 hmac.o: hmac.c hmac.h
 	$(CC) -I$(INC) -L$(LIB) -c hmac.c -lcrypto -ldl
