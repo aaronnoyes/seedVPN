@@ -411,8 +411,6 @@ int main(int argc, char *argv[]) {
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
 
-    /* free cipher context */
-    EVP_CIPHER_CTX_free(ctx);
   }
   
   return(0);
