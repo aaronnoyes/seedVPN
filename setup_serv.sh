@@ -1,8 +1,5 @@
 #! /bin/bash
 
-#connect to client using simpletun
-sudo ./simpletun -i tun0 -s -d &
-
 #configure tun0
 #IP assigned from first command line arg
 sudo ip addr add $1/24 dev tun0
