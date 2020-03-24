@@ -20,7 +20,7 @@ EVP_MD_CTX *setup_digest(char *key) {
     }
 
     //get sha256 digest
-    md = EVP_get_digestbyname("SHA256");
+    md = EVP_sha256();
     if (!md) {
         ERR_print_errors_fp(stderr);
         abort();
