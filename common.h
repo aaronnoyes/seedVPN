@@ -13,6 +13,11 @@
 #define ARP_PKT_LEN 28
 
 /**************************************************************************
+ * usage: prints usage and exits.                                         *
+ **************************************************************************/
+void usage(char *progname);
+
+/**************************************************************************
  * tun_alloc: allocates or reconnects to a tun/tap device. The caller     *
  *            needs to reserve enough space in *dev.                      *
  **************************************************************************/
@@ -57,5 +62,8 @@ void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote);
 // sock_fd - file descriptor for socket to write to
 // remote - socket of remote
 void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote);
+
+//parse command line arguments and perform setup
+void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd) {
 
 #endif
