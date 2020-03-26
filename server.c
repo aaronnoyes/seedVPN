@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
   progname = argv[0];
   
   /* Check command line options */
-  while((option = getopt(argc, argv, "i:sc:p:uahd")) > 0){
+  while((option = getopt(argc, argv, "i:p:uahd")) > 0){
     switch(option) {
       case 'd':
         debug = 1;
