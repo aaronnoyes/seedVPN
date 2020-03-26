@@ -51,10 +51,6 @@
 int debug;
 char *progname;
 
-/* dummy key and IV, MUST BE REMOVED */
-unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
-unsigned char *iv = (unsigned char *)"0123456789012345";
-
 
 /**************************************************************************
  * usage: prints usage and exits.                                         *

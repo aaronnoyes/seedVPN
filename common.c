@@ -60,6 +60,10 @@
 int debug;
 char *progname;
 
+/* dummy key and IV, MUST BE REMOVED */
+unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+unsigned char *iv = (unsigned char *)"0123456789012345";
+
 int tun_alloc(char *dev, int flags) {
 
   struct ifreq ifr;
