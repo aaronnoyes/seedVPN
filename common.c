@@ -215,10 +215,10 @@ void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote) {
     }
     do_debug("NET2TAP %lu: Read %d bytes from the network\n", n_net2tap, nread);
 
-    if(nread == 0) {
-        /* ctrl-c at the other end */
-        break;
-    }
+    // if(nread == 0) {
+    //     /* ctrl-c at the other end */
+    //     break;
+    // }
 
     //read the received hmac
     memcpy(rec_hmac, buffer, HMAC_SIZE);
