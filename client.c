@@ -128,10 +128,7 @@ int main(int argc, char *argv[]) {
   if(*if_name == '\0'){
     my_err("Must specify interface name!\n");
     usage();
-  }else if(cliserv < 0){
-    my_err("Must specify client or server mode!\n");
-    usage();
-  }else if((cliserv == CLIENT)&&(*remote_ip == '\0')){
+  }else if((*remote_ip == '\0')){
     my_err("Must specify server address!\n");
     usage();
   }
