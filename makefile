@@ -3,10 +3,7 @@ CFLAGS=
 INC=/usr/local/ssl/include/
 LIB=/usr/local/ssl/lib/
 
-all: simpletun server client common.o hmac.o aes.o
-
-simpletun: simpletun.c common.o aes.o hmac.o
-	$(CC) -I$(INC) -L$(LIB) -o simpletun simpletun.c common.o aes.o hmac.o -lcrypto -ldl
+all: server client common.o hmac.o aes.o
 
 server: server.c common.o aes.o hmac.o
 	$(CC) -I$(INC) -L$(LIB) -o server server.c common.o aes.o hmac.o -lcrypto -ldl
@@ -24,4 +21,4 @@ aes.o: aes.c aes.h
 	$(CC) -I$(INC) -L$(LIB) -c aes.c -lcrypto -ldl
 
 clean:
-	rm -rf *.o simpletun server client
+	rm -rf *.o server client
