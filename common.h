@@ -64,6 +64,6 @@ void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote);
 void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote);
 
 //parse command line arguments and perform setup
-void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd) {
+void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd);
 
 #endif
