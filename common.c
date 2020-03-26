@@ -303,7 +303,8 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   if(*if_name == '\0'){
     my_err("Must specify interface name!\n");
     usage();
-  }else if((strchr(optstr, 's')) && (*remote_ip == '\0')){
+  }
+  else if ((strchr(optstr, 's')) && (*remote_ip == '\0')){
     my_err("Must specify server address!\n");
     usage();
   }
@@ -315,4 +316,6 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   }
 
   do_debug("Successfully connected to interface %s\n", if_name);
+
+  return;
 }
