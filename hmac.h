@@ -1,3 +1,6 @@
+#ifndef HMAC_H
+#define HMAC_H
+
 #include <openssl/evp.h>
 
 //sha256 outputs 32 bytes
@@ -18,3 +21,5 @@ int sign_hmac(char *msg, int msg_len, char *hmac, char *key);
 // key - the private key used to sign the hmac
 // returns 1 if the same hmac is calculated, 0 if it is not the same
 int verify_hmac(char *msg, int msg_len, char *hmac, char *key);
+
+#endif

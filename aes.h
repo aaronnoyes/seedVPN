@@ -1,3 +1,6 @@
+#ifndef AES_H
+#define AES_H
+
 #include <openssl/evp.h>
 
 //encrypt_aes(4)
@@ -17,3 +20,5 @@ int encrypt_aes(char *plain, int plain_len, char *cipher, char *key, char *iv);
 // iv - iv for decryption
 // returns length of cipher or 0 on failure
 int decrypt_aes(char *cipher, int cipher_len, char *plain, char *key, char *iv);
+
+#endif
