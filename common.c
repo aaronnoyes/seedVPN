@@ -309,7 +309,7 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   }
 
   /* initialize tun/tap interface */
-  if ( (*tap_fd = tun_alloc(if_name, flags | IFF_NO_PI)) < 0 ) {
+  if ( (*tap_fd = tun_alloc(if_name, *flags | IFF_NO_PI)) < 0 ) {
     my_err("Error connecting to tun/tap interface %s!\n", if_name);
     exit(1);
   }
