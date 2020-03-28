@@ -1,0 +1,61 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1166016513 (0x45800001)
+    Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=CA, ST=Manitoba, L=Winnipeg, O=vpnLab, CN=Aaron/emailAddress=noyesa@myumanitoba.ca
+        Validity
+            Not Before: Mar 28 19:19:28 2020 GMT
+            Not After : Mar 28 19:19:28 2021 GMT
+        Subject: C=CA, ST=Manitoba, O=vpnLab, CN=Client/emailAddress=noyesa@myumanitoba.ca
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (1024 bit)
+                Modulus:
+                    00:ec:fa:af:a4:7a:6d:56:79:e9:5d:23:92:77:7c:
+                    67:3a:f0:3b:b5:1d:04:04:33:35:8a:72:42:53:13:
+                    ec:eb:6b:af:34:03:97:f2:92:bb:8f:df:f0:af:8f:
+                    48:97:95:73:fa:44:f8:99:10:66:a8:eb:00:bd:94:
+                    5e:a6:5c:a8:e4:7f:a2:98:d7:5b:34:21:c0:44:4d:
+                    ff:b3:eb:bd:a8:2f:c9:4e:da:73:81:0e:ac:02:a5:
+                    27:03:7d:ff:5f:44:aa:58:5c:48:ad:ba:94:57:57:
+                    b5:0c:c0:22:be:e8:ca:10:94:6b:8a:a3:13:78:27:
+                    d3:b5:97:74:ba:ce:9e:8f:5d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                OpenSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                C6:F2:65:F1:63:18:95:57:FC:BC:CF:61:CE:BA:26:A4:02:82:12:4B
+            X509v3 Authority Key Identifier: 
+                keyid:4D:54:17:EB:6B:AD:1F:44:A0:69:33:F5:48:0B:30:F8:BF:01:6B:60
+
+    Signature Algorithm: sha1WithRSAEncryption
+         34:3e:5e:db:dd:31:c7:b0:c5:b1:13:73:97:2f:02:01:04:93:
+         48:3d:b9:9c:fe:2f:cf:56:78:e0:b3:13:9c:54:0a:21:9f:30:
+         59:89:1d:ca:7d:51:34:e9:50:30:24:e6:b0:14:a9:8e:9c:27:
+         ea:80:e3:b2:3e:64:5d:c2:de:4e:01:59:d1:7f:4c:5c:1a:5b:
+         03:53:28:e4:7a:06:fd:3b:20:08:37:58:2d:46:74:53:00:d4:
+         cc:67:f1:b9:a0:a5:5c:d5:91:e2:ba:b2:43:d0:92:da:97:dc:
+         fa:8e:50:d1:cc:10:2a:a7:f0:08:3c:dd:d2:94:ca:42:e6:6e:
+         77:c7
+-----BEGIN CERTIFICATE-----
+MIIC1jCCAj+gAwIBAgIERYAAATANBgkqhkiG9w0BAQUFADB6MQswCQYDVQQGEwJD
+QTERMA8GA1UECAwITWFuaXRvYmExETAPBgNVBAcMCFdpbm5pcGVnMQ8wDQYDVQQK
+DAZ2cG5MYWIxDjAMBgNVBAMMBUFhcm9uMSQwIgYJKoZIhvcNAQkBFhVub3llc2FA
+bXl1bWFuaXRvYmEuY2EwHhcNMjAwMzI4MTkxOTI4WhcNMjEwMzI4MTkxOTI4WjBo
+MQswCQYDVQQGEwJDQTERMA8GA1UECAwITWFuaXRvYmExDzANBgNVBAoMBnZwbkxh
+YjEPMA0GA1UEAwwGQ2xpZW50MSQwIgYJKoZIhvcNAQkBFhVub3llc2FAbXl1bWFu
+aXRvYmEuY2EwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOz6r6R6bVZ56V0j
+knd8ZzrwO7UdBAQzNYpyQlMT7OtrrzQDl/KSu4/f8K+PSJeVc/pE+JkQZqjrAL2U
+XqZcqOR/opjXWzQhwERN/7PrvagvyU7ac4EOrAKlJwN9/19EqlhcSK26lFdXtQzA
+Ir7oyhCUa4qjE3gn07WXdLrOno9dAgMBAAGjezB5MAkGA1UdEwQCMAAwLAYJYIZI
+AYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQW
+BBTG8mXxYxiVV/y8z2HOuiakAoISSzAfBgNVHSMEGDAWgBRNVBfra60fRKBpM/VI
+CzD4vwFrYDANBgkqhkiG9w0BAQUFAAOBgQA0Pl7b3THHsMWxE3OXLwIBBJNIPbmc
+/i/PVnjgsxOcVAohnzBZiR3KfVE06VAwJOawFKmOnCfqgOOyPmRdwt5OAVnRf0xc
+GlsDUyjkegb9OyAIN1gtRnRTANTMZ/G5oKVc1ZHiurJD0JLal9z6jlDRzBAqp/AI
+PN3SlMpC5m53xw==
+-----END CERTIFICATE-----
