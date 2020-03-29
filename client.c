@@ -96,6 +96,11 @@ int main(int argc, char *argv[]) {
 
   //get SSL context
   ctx = ssl_init_ctx(CA_FILE , KEYFILE, CLI_KEY_PASS);
+  if (!ctx) {
+    do_debug("init context failed\n");
+    exit(1);
+  }
+  
   ssl = ssl_do_handshake(s_sock, ctx, 0);
   if (!ssl) {
     do_debug("SSL handshake failed\n");
