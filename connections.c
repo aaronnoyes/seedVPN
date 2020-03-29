@@ -6,7 +6,7 @@ int get_sock(int port, int type, int prot) {
     int sock_fd, optval = 1;
     struct sockaddr_in local;
 
-    if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+    if ( (sock_fd = socket(AF_INET, type, prot)) < 0) {
         perror("socket()");
         exit(1);
     }

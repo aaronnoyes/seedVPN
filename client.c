@@ -59,34 +59,34 @@ int main(int argc, char *argv[]) {
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  struct sockaddr_in remote;
-  char remote_ip[16] = "";
+  struct sockaddr_in server_addr;
+  char server_ip[16] = "";
   unsigned short int port = PORT;
-  int dg_sock, net_fd;
-  socklen_t remotelen;
+  int dg_sock, s_sock, net_fd;
   char buffer[BUFSIZE];
 
   progname = argv[0];
 
-  parse_args(argc, argv, "i:s:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
+  parse_args(argc, argv, "i:s:p:uahd", if_name, server_ip, &port, &flags, &header_len, &tap_fd);
 
-  dg_sock = get_sock(port, SOCK_DGRAM, IPPROTO_UDP);
+  s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
+  dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
 
   /* assign the destination address */
-  memset(&remote, 0, sizeof(remote));
-  remote.sin_family = AF_INET;
-  remote.sin_addr.s_addr = inet_addr(remote_ip);
-  remote.sin_port = htons(port);
+  memset(&server_addr, 0, sizeof(server_addr));
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_addr.s_addr = inet_addr(server_ip);
+  server_addr.sin_port = htons(port);
 
   /* send buffer to server so that we can initialize */
-  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
+  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
     perror("sendto()");
     exit(1);
   }
 
   do_debug("Client sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, dg_sock, remote);
+  do_tun_loop(tap_fd, dg_sock, server_addr);
   
   return(0);
 }

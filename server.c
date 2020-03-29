@@ -60,10 +60,10 @@ int main(int argc, char *argv[]) {
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  struct sockaddr_in local, remote;
+  struct sockaddr_in remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
-  int dg_sock, net_fd, optval = 1;
+  int dg_sock, net_fd, s_sock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
 
@@ -71,7 +71,9 @@ int main(int argc, char *argv[]) {
   
   parse_args(argc, argv, "i:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
-  dg_sock = get_sock(port, SOCK_DGRAM, IPPROTO_UDP);
+  //open a a stream socket for SSL, and a datagram socket for tunnel
+  s_sock = get_sock(port, SOCK_STREAM, 0);
+  dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
   
   remotelen = sizeof(remote);
   memset(&remote, 0, remotelen);
