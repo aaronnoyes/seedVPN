@@ -321,7 +321,7 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   return;
 }
 
-void do_tun_loop(int tap_fd, int net_fd, struct sockaddr remote) {
+void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote) {
   /* use select() to handle two descriptors at once */
   int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
