@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
   do_debug("Received tcp connection\n");
 
   //establish SSL connection
-  ctx = ssl_init_ctx(CA_FILE , KEYFILE, SERV_KEY_PASS);
+  ctx = ssl_init_ctx(CA_FILE, KEYFILE, SERV_KEY_PASS);
   if (!ctx) {
     do_debug("init context failed\n");
     exit(1);
