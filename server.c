@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  struct sockaddr_in remote;
+  struct sockaddr_in client_tcp, client_udp;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
   int dg_sock, net_fd, serv_sock, s_sock;
@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
   serv_sock = get_sock(port, SOCK_STREAM, 0);
   dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
   
-  remotelen = sizeof(remote);
-  memset(&remote, 0, remotelen);
+  remotelen = sizeof(client_tcp);
+  memset(&client_tcp, 0, remotelen);
 
   //wait for client via tcp
   if (listen(serv_sock, 5) < 0){
@@ -86,14 +86,20 @@ int main(int argc, char *argv[]) {
 
   //create a new socket from the incoming connection
   //also loads remote info for conencted client
-  if ((s_sock = accept(serv_sock, (struct sockaddr*)&remote, &remotelen)) < 0){
+  if ((s_sock = accept(serv_sock, (struct sockaddr*)&client_tcp, &remotelen)) < 0){
       perror("accept()");
       exit(1);
   }
+  do_debug("Received tcp connection\n");
 
-  do_debug("Server received connection\n");
+  //get client's datagram socket info
+  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {
+      perror("recvfrom()");
+      exit(1);
+  }
+  do_debug("Connected via udp\n");
 
-  do_tun_loop(tap_fd, dg_sock, remote);
+  do_tun_loop(tap_fd, dg_sock, client_udp);
   
   return(0);
 }
