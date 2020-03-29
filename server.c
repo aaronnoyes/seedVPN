@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
-  int dg_sock, net_fd, s_sock;
+  int dg_sock, net_fd, serv_sock, s_sock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
 
@@ -72,15 +72,23 @@ int main(int argc, char *argv[]) {
   parse_args(argc, argv, "i:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
-  s_sock = get_sock(port, SOCK_STREAM, 0);
+  serv_sock = get_sock(port, SOCK_STREAM, 0);
   dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
   
   remotelen = sizeof(remote);
   memset(&remote, 0, remotelen);
 
-  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
-    perror("recvfrom()");
-    exit(1);
+  //wait for client via tcp
+  if (listen(serv_sock, 5) < 0){
+      perror("listen()");
+      exit(1);
+  }
+
+  //create a new socket from the incoming connection
+  //also loads remote info for conencted client
+  if ((s_sock = accept(serv_sock, (struct sockaddr*)&remote, &remotelen)) < 0){
+      perror("accept()");
+      exit(1);
   }
 
   do_debug("Server received connection\n");

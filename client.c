@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  struct sockaddr_in server_addr;
+  struct sockaddr_in server_addr_tcp, server_addr_udp;
   char server_ip[16] = "";
   unsigned short int port = PORT;
   int dg_sock, s_sock, net_fd;
@@ -72,21 +72,27 @@ int main(int argc, char *argv[]) {
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
 
-  /* assign the destination address */
-  memset(&server_addr, 0, sizeof(server_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_addr.s_addr = inet_addr(server_ip);
-  server_addr.sin_port = htons(port);
+  //location of server's tcp port
+  memset(&server_addr_tcp, 0, sizeof(server_addr_tcp));
+  server_addr_tcp.sin_family = AF_INET;
+  server_addr_tcp.sin_addr.s_addr = inet_addr(server_ip);
+  server_addr_tcp.sin_port = htons(port);
 
-  /* send buffer to server so that we can initialize */
-  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-    perror("sendto()");
-    exit(1);
+  //location of server's udp port
+  memset(&server_addr_udp, 0, sizeof(server_addr_udp));
+  server_addr_udp.sin_family = AF_INET;
+  server_addr_udp.sin_addr.s_addr = inet_addr(server_ip);
+  server_addr_udp.sin_port = htons(port + 1);
+
+  //establish tcp connection with server
+  if (connect(s_sock, (struct sockaddr*) &server_addr_tcp, sizeof(server_addr_tcp)) < 0){
+      perror("connect()");
+      exit(1);
   }
 
   do_debug("Client sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, dg_sock, server_addr);
+  do_tun_loop(tap_fd, dg_sock, server_addr_udp);
   
   return(0);
 }
