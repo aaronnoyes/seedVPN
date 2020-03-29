@@ -97,14 +97,14 @@ int main(int argc, char *argv[]) {
   //establish SSL connection
   ctx = ssl_init_ctx(CA_FILE, KEYFILE, SERV_KEY_PASS);
   if (!ctx) {
-    do_debug("init context failed\n");
-    exit(1);
+    ERR_print_errors_fp(stderr);
+    abort();
   }
 
   ssl = ssl_do_handshake(s_sock, ctx, 1);
   if (!ssl) {
-    do_debug("SSL handshake failed\n");
-    exit(1);
+    ERR_print_errors_fp(stderr);
+    abort();
   }
   do_debug("SSL handshake complete\n");
 
