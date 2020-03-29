@@ -23,6 +23,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password) {
 
     //load library
     SSL_library_init();
+    SSL_load_error_strings();
 
     //set up context using SSL/TLS
     //openSSL will negitiate the best to use
