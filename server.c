@@ -48,8 +48,8 @@
 #include "ssl.h"
 #include "connections.h"
 
-
 #define SERV_KEY_PASS "server"
+#define KEYFILE "./ssl/server.key"
 
 int debug;
 char *progname;
@@ -66,6 +66,8 @@ int main(int argc, char *argv[]) {
   int dg_sock, net_fd, serv_sock, s_sock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
+  SSL_CTX *ctx;
+  SSL *ssl;
 
   progname = argv[0];
   
@@ -91,6 +93,15 @@ int main(int argc, char *argv[]) {
       exit(1);
   }
   do_debug("Received tcp connection\n");
+
+  //establish SSL connection
+  ctx = ssl_init_ctx(CA_FILE , KEYFILE, SERV_KEY_PASS);
+  ssl = ssl_do_handshake(s_sock, ctx, 1);
+  if (!ssl) {
+    do_debug("SSL handshake failed\n");
+    exit(1);
+  }
+  do_debug("SSL handshake complete\n");
 
   //get client's datagram socket info
   if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {

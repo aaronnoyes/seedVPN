@@ -49,6 +49,7 @@
 #include "connections.h"
 
 #define CLI_KEY_PASS "client"
+#define KEYFILE "./ssl/client.key"
 
 int debug;
 char *progname;
@@ -64,6 +65,8 @@ int main(int argc, char *argv[]) {
   unsigned short int port = PORT;
   int dg_sock, s_sock, net_fd;
   char buffer[BUFSIZE];
+  SSL_CTX *ctx;
+  SSL *ssl;
 
   progname = argv[0];
 
@@ -90,6 +93,15 @@ int main(int argc, char *argv[]) {
       exit(1);
   }
   do_debug("Established tcp connection with server\n");
+
+  //get SSL context
+  ctx = ssl_init_ctx(CA_FILE , KEYFILE, CLI_KEY_PASS);
+  ssl = ssl_do_handshake(s_sock, ctx, 0);
+  if (!ssl) {
+    do_debug("SSL handshake failed\n");
+    exit(1);
+  }
+  do_debug("SSL handshake complete\n");
 
   //send buffer to server so that it gets our datagram socket
   if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp)) < 0) {
