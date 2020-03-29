@@ -57,12 +57,10 @@ int main(int argc, char *argv[]) {
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  int maxfd;
-  char buffer[BUFSIZE];
-  struct sockaddr_in local, remote;
+  struct sockaddr_in remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
-  int sock_fd, net_fd, optval = 1;
+  int sock_fd, net_fd;
   socklen_t remotelen;
 
   progname = argv[0];
