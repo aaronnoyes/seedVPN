@@ -45,6 +45,8 @@
 #include "common.h"
 #include "aes.h"
 #include "hmac.h"
+#include "ssl.h"
+#include "connections.h"
 
 #define CLI_KEY_PASS "client"
 
@@ -60,17 +62,15 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
-  int sock_fd, net_fd;
+  int dg_sock, net_fd;
   socklen_t remotelen;
+  char buffer[BUFSIZE];
 
   progname = argv[0];
 
   parse_args(argc, argv, "i:s:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
-  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-    perror("socket()");
-    exit(1);
-  }
+  dg_sock = get_dg_sock(NOPORT);
 
   /* assign the destination address */
   memset(&remote, 0, sizeof(remote));
@@ -79,14 +79,14 @@ int main(int argc, char *argv[]) {
   remote.sin_port = htons(port);
 
   /* send buffer to server so that we can initialize */
-  if (sendto(sock_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
+  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, sizeof(remote)) < 0) {
     perror("sendto()");
     exit(1);
   }
 
   do_debug("Client sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, sock_fd, remote);
+  do_tun_loop(tap_fd, dg_sock, remote);
   
   return(0);
 }

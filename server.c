@@ -45,6 +45,9 @@
 #include "common.h"
 #include "aes.h"
 #include "hmac.h"
+#include "ssl.h"
+#include "connections.h"
+
 
 #define SERV_KEY_PASS "server"
 
@@ -60,44 +63,27 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in local, remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
-  int sock_fd, net_fd, optval = 1;
+  int dg_sock, net_fd, optval = 1;
   socklen_t remotelen;
+  char buffer[BUFSIZE];
 
   progname = argv[0];
   
   parse_args(argc, argv, "i:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
-  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-    perror("socket()");
-    exit(1);
-  }
-
-  /* avoid EADDRINUSE error on bind() */
-  if(setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0){
-    perror("setsockopt()");
-    exit(1);
-  }
-  
-  memset(&local, 0, sizeof(local));
-  local.sin_family = AF_INET;
-  local.sin_addr.s_addr = htonl(INADDR_ANY);
-  local.sin_port = htons(port);
-  if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0){
-    perror("bind()");
-    exit(1);
-  }
+  dg_sock = get_dg_sock(port);
   
   remotelen = sizeof(remote);
   memset(&remote, 0, remotelen);
 
-  if (recvfrom(sock_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
+  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen) < 0) {
     perror("recvfrom()");
     exit(1);
   }
 
   do_debug("Server received connection\n");
 
-  do_tun_loop(tap_fd, sock_fd, remote);
+  do_tun_loop(tap_fd, dg_sock, remote);
   
   return(0);
 }
