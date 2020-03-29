@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
   parse_args(argc, argv, "i:s:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
-  dg_sock = get_dg_sock(NOPORT);
+  dg_sock = get_sock(port, SOCK_DGRAM, IPPROTO_UDP);
 
   /* assign the destination address */
   memset(&remote, 0, sizeof(remote));

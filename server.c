@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
   
   parse_args(argc, argv, "i:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
 
-  dg_sock = get_dg_sock(port);
+  dg_sock = get_sock(port, SOCK_DGRAM, IPPROTO_UDP);
   
   remotelen = sizeof(remote);
   memset(&remote, 0, remotelen);

@@ -5,6 +5,6 @@
 
 //get_dg_sock(1)
 // port - port to bind to, if NOPORT do not bind
-int get_dg_sock(int port);
+get_sock(int port, int type, int prot);
 
 #endif

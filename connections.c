@@ -2,7 +2,7 @@
 #include <arpa/inet.h>
 #include "connections.h"
 
-int get_dg_sock(int port) {
+int get_sock(int port, int type, int prot) {
     int sock_fd, optval = 1;
     struct sockaddr_in local;
 
