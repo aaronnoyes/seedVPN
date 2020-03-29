@@ -46,7 +46,7 @@
 #include "aes.h"
 #include "hmac.h"
 
-
+#define SERV_KEY_PASS "server"
 
 int debug;
 char *progname;
@@ -99,39 +99,7 @@ int main(int argc, char *argv[]) {
 
   do_debug("Server received connection\n");
 
-  /* socket is the fd for client and server */
-  net_fd = sock_fd;
-  
-  /* use select() to handle two descriptors at once */
-  maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
-
-  while(1) {
-    int ret;
-    fd_set rd_set;
-
-    FD_ZERO(&rd_set);
-    FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
-
-    ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
-
-    if (ret < 0 && errno == EINTR){
-      continue;
-    }
-
-    if (ret < 0) {
-      perror("select()");
-      exit(1);
-    }
-
-    if(FD_ISSET(tap_fd, &rd_set)){
-      tap2net(tap_fd, sock_fd, remote);
-    }
-
-    if(FD_ISSET(net_fd, &rd_set)){
-      net2tap(net_fd, sock_fd, tap_fd, remote);
-    }
-
-  }
+  do_tun_loop(tap_fd, sock_fd, remote);
   
   return(0);
 }

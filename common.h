@@ -55,15 +55,21 @@ void my_err(char *msg, ...);
 // tap_fd - file descriptor for tap interface
 // sock_fd - file descriptor for socket to write to
 // remote - socket of remote
-void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote);
+void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote);
 
 //net2tap
 // tap_fd - file descriptor for tap interface
 // sock_fd - file descriptor for socket to write to
 // remote - socket of remote
-void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote);
+void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote);
 
 //parse command line arguments and perform setup
 void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd);
+
+//do_tun_loop(3)
+// tap_fd - file descriptor for tun interface
+// net_fd - file descriptor for network adapter
+// remote - socket address of remote computer
+void do_tun_loop(int tap_fd, int net_fd, struct sockaddr remote);
 
 #endif

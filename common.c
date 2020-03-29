@@ -164,7 +164,7 @@ void my_err(char *msg, ...) {
   va_end(argp);
 }
 
-void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote) {
+void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote) {
     /* data from tun/tap: read it, ecrypt it, and write it to the network */
     static unsigned long int n_tap2net = 0;
     char buffer[BUFSIZE];
@@ -200,7 +200,7 @@ void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote) {
     memcpy(buffer + HMAC_SIZE, cipher, cipher_len);
 
     /* send ecnrypted packet packet over the network */
-    if ((nwrite = sendto(sock_fd, buffer, cipher_len + HMAC_SIZE, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
+    if ((nwrite = sendto(net_fd, buffer, cipher_len + HMAC_SIZE, 0, (struct sockaddr*)&remote, sizeof(remote))) < 0) {
         perror("sendto()");
         exit(1);
     }
@@ -209,7 +209,7 @@ void tap2net(int tap_fd, int sock_fd, struct sockaddr_in remote) {
 
 }
 
-void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote) {
+void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote) {
     /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
     uint16_t nread, nwrite, plength;
     unsigned char plain[BUFSIZE];
@@ -223,7 +223,7 @@ void net2tap(int net_fd, int sock_fd, int tap_fd, struct sockaddr_in remote) {
     /* read packet */
     socklen_t remotelen = sizeof(remote);
     memset(&remote, 0, remotelen);
-    if ((nread = recvfrom(sock_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen)) < 0) {
+    if ((nread = recvfrom(net_fd, buffer, BUFSIZE, 0, (struct sockaddr*)&remote, &remotelen)) < 0) {
         perror("recvfrom()");
         exit(1);
     }
@@ -319,4 +319,37 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   do_debug("Successfully connected to interface %s\n", if_name);
 
   return;
+}
+
+void do_tun_loop(int tap_fd, int net_fd, struct sockaddr remote) {
+  /* use select() to handle two descriptors at once */
+  int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
+
+  while(1) {
+    int ret;
+    fd_set rd_set;
+
+    FD_ZERO(&rd_set);
+    FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
+
+    ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
+
+    if (ret < 0 && errno == EINTR){
+      continue;
+    }
+
+    if (ret < 0) {
+      perror("select()");
+      exit(1);
+    }
+
+    if(FD_ISSET(tap_fd, &rd_set)){
+      tap2net(tap_fd, net_fd, remote);
+    }
+
+    if(FD_ISSET(net_fd, &rd_set)){
+      net2tap(net_fd, tap_fd, remote);
+    }
+
+  }
 }
