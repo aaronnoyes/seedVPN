@@ -28,14 +28,14 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
 
     //set up context using SSL/TLS
     //openSSL will negitiate the best to use
-    // if (server) {
-    //     method = SSLv23_server_method();
-    // }
-    // else { 
-    //     method = SSLv23_client_method();
-    // }
+    if (server) {
+        method = TLS_server_method();
+    }
+    else { 
+        method = TLS_client_method();
+    }
 
-    method = TLS_method();
+    // method = TLS_method();
 
     if (!method) {
         perror("Failed to load SSL method");
