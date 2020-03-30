@@ -10,7 +10,7 @@
 //returns md context already set up with private key
 EVP_MD_CTX *setup_digest(char *key) {
     EVP_MD_CTX* ctx = NULL;
-    const EVP_MD* md = NULL;
+    EVP_MD* md = NULL;
     EVP_PKEY* pkey = NULL;
 
     //init digest context

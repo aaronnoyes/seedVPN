@@ -20,7 +20,7 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
 
 SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) {
     SSL_CTX *ctx;
-    const SSL_METHOD *method;
+    SSL_METHOD *method;
 
     //load library
     SSL_library_init();
