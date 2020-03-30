@@ -40,6 +40,9 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
         return NULL;
     }
 
+    //set ecdh params
+    SSL_CTX_set_ecdh_auto(ctx, 1);
+
     //load the CA's cert
     if (!SSL_CTX_load_verify_locations(ctx, CA_FILE, NULL)) {
         perror("Failed to get load CA cert");
