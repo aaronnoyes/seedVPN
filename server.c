@@ -111,6 +111,11 @@ int main(int argc, char *argv[]) {
   }
   do_debug("SSL handshake complete\n");
 
+  //generate key and send to client over SSL connection
+  strcpy(key, "01234567890123456789012345678901");
+  SSL_write(ssl, key, AES_KEYSIZE + 1);
+  do_debug("Sent session key\n");
+
   //get client's datagram socket info
   if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {
       perror("recvfrom()");

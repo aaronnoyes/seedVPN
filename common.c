@@ -46,22 +46,14 @@
 #include "aes.h"
 #include "hmac.h"
 
-/* buffer for reading from tun/tap interface, must be >= 1500 */
-#define BUFSIZE 2000   
-#define CLIENT 0
-#define SERVER 1
-#define PORT 55555
-
-/* some common lengths */
-#define IP_HDR_LEN 20
-#define ETH_HDR_LEN 14
-#define ARP_PKT_LEN 28
-
 int debug;
 char *progname;
 
 /* dummy key and IV, MUST BE REMOVED */
-unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+// unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+// unsigned char *iv = (unsigned char *)"0123456789012345";
+
+unsigned char key[AES_KEYSIZE + 1];
 unsigned char *iv = (unsigned char *)"0123456789012345";
 
 void usage() {

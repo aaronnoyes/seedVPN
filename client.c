@@ -108,6 +108,10 @@ int main(int argc, char *argv[]) {
   }
   do_debug("SSL handshake complete\n");
 
+  //get key from server
+  SSL_read(ssl, key, AES_KEYSIZE + 1);
+  do_debug("Received session key\n");
+
   //send buffer to server so that it gets our datagram socket
   if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp)) < 0) {
     perror("sendto()");
