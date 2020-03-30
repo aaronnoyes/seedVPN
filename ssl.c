@@ -1,6 +1,7 @@
 #include <openssl/ssl.h>
 #include <string.h>
 #include "ssl.h"
+#include <openssl/dh.h>
 
 //password retrieved to decrypt keyfile
 static char *keyfile_pass;
@@ -18,9 +19,12 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
     return(pass_len);
 }
 
+
 SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) {
     SSL_CTX *ctx;
     SSL_METHOD *method;
+    FILE *f_dh_params;
+    DH *dh_2048 = NULL;
 
     //load library
     SSL_library_init();
@@ -40,8 +44,24 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
         return NULL;
     }
 
-    //set ecdh params
-    SSL_CTX_set_ecdh_auto(ctx, 1);
+    //get DH parameters
+    f_dh_params = fopen("dh_param_2048.pem", "r");
+
+    if (f_dh_params) {
+        dh_2048 = PEM_read_DHparams(f_dh_params, NULL, NULL, NULL);
+        fclose(f_dh_params);
+    } else {
+        printf("Could not open DH param file.\n");
+        return NULL;
+    }
+    if (dh_2048 == NULL) {
+        printf("Could read DH params from file.\n");
+        return NULL;
+    }
+    if (SSL_CTX_set_tmp_dh(ctx, dh_2048) != 1) {
+        printf("Failed to set DH params to context.\n");
+        return NULL;
+    }
 
     //load the CA's cert
     if (!SSL_CTX_load_verify_locations(ctx, CA_FILE, NULL)) {
@@ -66,6 +86,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
 SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server) {
     BIO *bio;
     SSL *ssl;
+    DH *dh;
     int conn_status;
 
     //get ssl struct from context and bind BIO to the socket
