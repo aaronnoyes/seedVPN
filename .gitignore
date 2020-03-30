@@ -1,3 +1,4 @@
 VPN.pdf
 *.o
-simpletun
+client
+server
