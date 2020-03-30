@@ -92,6 +92,8 @@ SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server) {
 
     //if connection fails, return NULL
     if (conn_status != 1) {
+        conn_status = SSL_get_error(ssl, conn_status);
+        printf("Handshake failed with error #%d\n", conn_status);
         return NULL;
     }
 
