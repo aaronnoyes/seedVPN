@@ -1,4 +1,5 @@
 #include <openssl/evp.h>
+#include <openssl/err.h>
 #include <string.h>
 
 #include "hmac.h"
@@ -9,7 +10,7 @@
 //returns md context already set up with private key
 EVP_MD_CTX *setup_digest(char *key) {
     EVP_MD_CTX* ctx = NULL;
-    EVP_MD* md = NULL;
+    const EVP_MD* md = NULL;
     EVP_PKEY* pkey = NULL;
 
     //init digest context
