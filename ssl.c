@@ -47,6 +47,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
 
     //load the CA's cert
     if (!SSL_CTX_load_verify_locations(ctx, CA_FILE, NULL)) {
+        perror("Failed to get load CA cert");
         return NULL;
     }
 
@@ -57,6 +58,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
     //load private key into context
     //private keys are in PEM format
     if(!(SSL_CTX_use_PrivateKey_file(ctx, keyfile, SSL_FILETYPE_PEM))) {
+        perror("Failed to load private key file");
         return NULL;
     }
 
