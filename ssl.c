@@ -35,7 +35,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
     //     method = SSLv23_client_method();
     // }
 
-    method = SSLv23_method();
+    method = TLS_method();
 
     if (!method) {
         perror("Failed to load SSL method");
