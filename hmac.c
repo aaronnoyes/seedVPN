@@ -53,7 +53,7 @@ int sign_hmac(char *msg, int msg_len, char *hmac, char *key) {
     }
 
     //store messgae in hmac
-    if(!(EVP_DigestSignFinal(ctx, hmac, &hmac_len))) {
+    if(!(EVP_DigestSignFinal(ctx, hmac, (size_t*)&hmac_len))) {
         return 0;
     }
     

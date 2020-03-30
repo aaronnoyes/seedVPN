@@ -1,4 +1,5 @@
 #include <openssl/ssl.h>
+#include <string.h>
 #include "ssl.h"
 
 //password retrieved to decrypt keyfile
@@ -19,7 +20,7 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
 
 SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) {
     SSL_CTX *ctx;
-    SSL_METHOD *method;
+    const SSL_METHOD *method;
 
     //load library
     SSL_library_init();
