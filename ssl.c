@@ -89,13 +89,6 @@ SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server) {
     DH *dh;
     int conn_status;
 
-    //need DH parameters for TLS
-    dh = get_dh2236 ();
-    if (1 != SSL_CTX_set_tmp_dh (ctx, dh)) {
-        printf("Failed to set up DH parameters\n");
-        return NULL;
-    }
-
     //get ssl struct from context and bind BIO to the socket
     ssl = SSL_new(ctx);
     bio = BIO_new_socket(sock, BIO_NOCLOSE);
