@@ -82,7 +82,7 @@ SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server) {
     }
 
     //if connection fails, return NULL
-    if (!conn_status) {
+    if (conn_status != 1) {
         return NULL;
     }
 
