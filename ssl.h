@@ -10,7 +10,7 @@
 // cafile - the path to certificate authoritie's cert
 // keyfile - the path to PEM encoded file with private key in it
 // password - the password to decrypt the keyfile
-SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password);
+SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server);
 
 //ssl_do_handshake(3)
 // sock - tcp socket connected to peer

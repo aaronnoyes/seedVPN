@@ -17,7 +17,7 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
     return(pass_len);
 }
 
-SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password) {
+SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) {
     SSL_CTX *ctx;
     SSL_METHOD *method;
 
@@ -27,7 +27,13 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password) {
 
     //set up context using SSL/TLS
     //openSSL will negitiate the best to use
-    method = SSLv23_method();
+    if (server) {
+        method = SSLv23_method();
+    }
+    else { 
+        method = SSLv3_client_method();
+    }
+
     if (!method) {
         perror("Failed to load SSL method");
         return NULL;
