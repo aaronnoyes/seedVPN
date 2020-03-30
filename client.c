@@ -53,6 +53,7 @@
 
 int debug;
 char *progname;
+extern char *key;
 
 int main(int argc, char *argv[]) {
   
