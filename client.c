@@ -50,6 +50,7 @@
 
 #define CLI_KEY_PASS "client"
 #define KEYFILE "./ssl/client.key"
+#define CERTFILE "./ssl/client.crt"
 
 int debug;
 char *progname;
@@ -96,7 +97,7 @@ int main(int argc, char *argv[]) {
   do_debug("Established tcp connection with server\n");
 
   //get SSL context
-  ctx = ssl_init_ctx(CA_FILE , KEYFILE, CLI_KEY_PASS, KEYFILE, 0);
+  ctx = ssl_init_ctx(CA_FILE , KEYFILE, CLI_KEY_PASS, CERTFILE, 0);
   if (!ctx) {
     ERR_print_errors_fp(stderr);
     abort();
