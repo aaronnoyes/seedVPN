@@ -357,8 +357,8 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
   tun.sin_addr.s_addr = inet_addr(ip);
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
   r = ioctl(tap_fd, SIOCSIFADDR, (char *)&ifr);
-  if (!r) {
-    do_debug("Failed to set interface address\n");
+  if (r < 0) {
+    do_debug("Failed to set interface address errno: \n", errno);
     return 0;
   }
 
@@ -369,8 +369,8 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
   //set interface up
   ifr.ifr_flags |= IFF_UP;
   r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr);
-  if (!r) {
-    do_debug("Failed to set interface up\n");
+  if (r < 0) {
+    do_debug("Failed to set interface up errno: \n", errno);
     return 0;
   }
 
