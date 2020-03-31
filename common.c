@@ -346,6 +346,7 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
 int tun_config(char *ip, char *i_name) {
   struct ifreq ifr;
   struct sockaddr_in tun;
+  char *netmask = "255.255.255.0"; //netmask will always be the same for this implementation
   int r, sock;
 
   //get socket for ioctl
@@ -364,15 +365,31 @@ int tun_config(char *ip, char *i_name) {
   tun.sin_family = AF_INET;
   r = inet_pton(tun.sin_family, ip, &tun.sin_addr);
   if (r == 0) {
-    do_debug("inet_pton() - invalid ip\n");
+    do_debug("invalid ip\n");
   }
   if (r == -1) {
-    do_debug("inet_pton() - invalid family\n");
+    do_debug("invalid family\n");
   }
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
   r = ioctl(sock, SIOCSIFADDR, &ifr);
   if (r < 0) {
     do_debug("Failed to set interface address errno: %d\n", errno);
+    return 0;
+  }
+
+  //set netmask
+  tun.sin_family = AF_INET;
+  r = inet_pton(tun.sin_family, netmask, &tun.sin_addr);
+  if (r == 0) {
+    do_debug("invalid ip\n");
+  }
+  if (r == -1) {
+    do_debug("invalid family\n");
+  }
+  memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
+  r = ioctl(sock, SIOCSIFNETMASK, &ifr);
+  if (r < 0) {
+    do_debug("Failed to set interface netmask errno: %d\n", errno);
     return 0;
   }
 
