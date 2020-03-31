@@ -45,6 +45,7 @@
 #include "common.h"
 #include "aes.h"
 #include "hmac.h"
+#include "connections.h"
 
 int debug;
 char *progname;
@@ -363,10 +364,10 @@ int tun_config(char *ip, char *i_name) {
   tun.sin_family = AF_INET;
   r = inet_pton(tun.sin_family, ip, &tun.sin_addr);
   if (r == 0) {
-    raise_error("inet_pton() - invalid ip");
+    do_debug("inet_pton() - invalid ip\n");
   }
   if (r == -1) {
-    raise_error("inet_pton() - invalid family");
+    do_debug("inet_pton() - invalid family\n");
   }
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
   r = ioctl(sock, SIOCSIFADDR, &ifr);
