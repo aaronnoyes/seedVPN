@@ -75,6 +75,6 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
 //tun_config(2)
 // ip - the ip address to assign tun
 // tap_fd = file descriptor for tun interface
-int tun_config(char *ip, int tap_fd, char *i_name);
+int tun_config(char *ip, char *i_name);
 
 #endif
