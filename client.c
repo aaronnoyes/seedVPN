@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   char server_ip[16] = "";
   char tun_ip[16] = "";
   unsigned short int port = PORT;
-  int dg_sock, s_sock, net_fd;
+  int dg_sock, s_sock, net_fd, tunsock;
   char buffer[BUFSIZE];
   unsigned char key[AES_KEYSIZE + 1];
   unsigned char iv[AES_IV_SIZE + 1];
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   progname = argv[0];
 
   parse_args(argc, argv, "i:s:p:uahdt:", if_name, server_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
-  tun_config(tun_ip, if_name);
+  tunsock = tun_config(tun_ip, if_name);
 
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
@@ -129,6 +129,12 @@ int main(int argc, char *argv[]) {
   do_debug("Sent blank buffer to connect to server\n");
     
   do_tun_loop(tap_fd, dg_sock, server_udp, key, iv);
+
+  close(dg_sock);
+  close(s_sock);
+  close(net_fd);
+  close(tunsock);
+  close(tap_fd);
   
   return(0);
 }

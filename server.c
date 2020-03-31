@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
   char remote_ip[16] = "";
   char tun_ip[16] = "";
   unsigned short int port = PORT;
-  int dg_sock, net_fd, serv_sock, s_sock;
+  int dg_sock, net_fd, serv_sock, s_sock, tunsock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
   unsigned char key[AES_KEYSIZE + 1];
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   progname = argv[0];
   
   parse_args(argc, argv, "i:p:uahdt:", if_name, remote_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
-  tun_config(tun_ip, if_name);
+  tunsock = tun_config(tun_ip, if_name);
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);
@@ -137,6 +137,13 @@ int main(int argc, char *argv[]) {
   do_debug("Connected via udp\n");
 
   do_tun_loop(tap_fd, dg_sock, client_udp, key, iv);
+
+  close(dg_sock);
+  close(s_sock);
+  close(net_fd);
+  close(tunsock);
+  close(serv_sock);
+  close(tap_fd);
   
   return(0);
 }
