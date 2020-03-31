@@ -360,7 +360,14 @@ int tun_config(char *ip, char *i_name) {
   strncpy(ifr.ifr_name, i_name, IFNAMSIZ);
 
   //set address
-  tun.sin_addr.s_addr = inet_addr(ip);
+  tun.sin_family = AF_INET;
+  r = inet_pton(tun.sin_family, ip, &tun.sin_addr);
+  if (r == 0) {
+    raise_error("inet_pton() - invalid ip");
+  }
+  if (r == -1) {
+    raise_error("inet_pton() - invalid family");
+  }
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
   r = ioctl(sock, SIOCSIFADDR, &ifr);
   if (r < 0) {
