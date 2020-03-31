@@ -11,8 +11,8 @@ server: server.c common.o aes.o hmac.o ssl.o connections.o
 client: client.c common.o aes.o hmac.o ssl.o connections.o
 	$(CC) -I$(INC) -L$(LIB) -o client client.c common.o aes.o hmac.o ssl.o connections.o -lssl -lcrypto -ldl $(CFLAGS)
 
-common.o: common.c common.h connections.o
-	$(CC) -I$(INC) -L$(LIB) -c common.c connections.o -lcrypto -ldl $(CFLAGS)
+common.o: common.c common.h
+	$(CC) -I$(INC) -L$(LIB) -c common.c -lcrypto -ldl $(CFLAGS)
 
 hmac.o: hmac.c hmac.h
 	$(CC) -I$(INC) -L$(LIB) -c hmac.c -lcrypto -ldl $(CFLAGS)

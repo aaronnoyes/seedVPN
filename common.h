@@ -72,9 +72,4 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
 // remote - socket address of remote computer
 void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
 
-//tun_config(2)
-// ip - the ip address to assign tun
-// tap_fd = file descriptor for tun interface
-int tun_config(char *ip, char *i_name);
-
 #endif
