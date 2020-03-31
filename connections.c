@@ -110,7 +110,7 @@ int tun_config(char *ip, char *i_name) {
 void add_n_route(char *ip, char *dev) {
     //args are all static so as not to be abused
     char *rt_path = "/usr/sbin/route";
-    char *args[] = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", ""};
+    char *args[] = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", "", NULL};
     args[3] = ip;
     args[7] = dev;
     int r, pid;
