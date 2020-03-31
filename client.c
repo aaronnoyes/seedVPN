@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   progname = argv[0];
 
   parse_args(argc, argv, "i:s:p:uahdt:", if_name, server_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
-  tun_config(tun_ip, tap_fd, if_name);
+  tun_config(tun_ip, if_name);
 
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);

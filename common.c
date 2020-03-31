@@ -342,10 +342,17 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
   }
 }
 
-int tun_config(char *ip, int tap_fd, char *i_name) {
+int tun_config(char *ip, char *i_name) {
   struct ifreq ifr;
   struct sockaddr_in tun;
-  int r;
+  int r, sock;
+
+  //get socket for ioctl
+  sock = get_sock(0, SOCK_DGRAM, 0);
+  if (!sock) {
+    do_debug("Failed to create socket for tun\n");
+    return sock;
+  }
 
   //clear memory for address and req
   memset(&tun, 0, sizeof(tun));
@@ -355,7 +362,7 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
   //set address
   tun.sin_addr.s_addr = inet_addr(ip);
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
-  r = ioctl(tap_fd, SIOCSIFADDR, &ifr);
+  r = ioctl(sock, SIOCSIFADDR, &ifr);
   if (r < 0) {
     do_debug("Failed to set interface address errno: %d\n", errno);
     return 0;
@@ -367,11 +374,11 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
 
   //set interface up
   ifr.ifr_flags |= IFF_UP;
-  r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr);
+  r = ioctl(sock, SIOCSIFFLAGS, &ifr);
   if (r < 0) {
     do_debug("Failed to set interface up errno: %d\n", errno);
     return 0;
   }
 
-  return 1;
+  return sock;
 }
