@@ -20,7 +20,7 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
 }
 
 
-SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) {
+SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, char* cert, int server) {
     SSL_CTX *ctx;
     SSL_METHOD *method;
     FILE *f_dh_params;
@@ -60,6 +60,11 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
     }
     if (SSL_CTX_set_tmp_dh(ctx, dh_2048) != 1) {
         printf("Failed to set DH params to context.\n");
+        return NULL;
+    }
+
+    if (SSL_CTX_use_certificate_file(ctx, cert, SSL_FILETYPE_PEM) != 1) {
+        printf("Failed to load certificate at %s\n", cert);
         return NULL;
     }
 
