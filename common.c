@@ -368,7 +368,7 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
 
   //set interface up
   ifr.ifr_flags |= IFF_UP;
-  r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr)
+  r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr);
   if (!r) {
     do_debug("Failed to set interface up\n");
     return 0;
