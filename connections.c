@@ -113,7 +113,7 @@ void add_n_route(char *ip, char *dev) {
     char *args[] = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", "", NULL};
     args[7] = dev;
     int r, pid;
-    unsigned int netmask = 0xFFFFFF00;
+    unsigned int netmask = 0x00FFFFFF;
     in_addr_t ip_addr;
 
     //ip address of remote must be masked with subnet first
