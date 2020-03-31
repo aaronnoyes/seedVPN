@@ -54,7 +54,6 @@
 
 int debug;
 char *progname;
-extern char *key;
 
 int main(int argc, char *argv[]) {
   
@@ -67,6 +66,7 @@ int main(int argc, char *argv[]) {
   unsigned short int port = PORT;
   int dg_sock, s_sock, net_fd;
   char buffer[BUFSIZE];
+  unsigned char key[AES_KEYSIZE + 1];
   SSL_CTX *ctx;
   SSL *ssl;
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, dg_sock, server_udp);
+  do_tun_loop(tap_fd, dg_sock, server_udp, key);
   
   return(0);
 }

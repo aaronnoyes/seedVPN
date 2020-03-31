@@ -53,7 +53,6 @@ char *progname;
 // unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
 // unsigned char *iv = (unsigned char *)"0123456789012345";
 
-unsigned char key[AES_KEYSIZE + 1];
 unsigned char *iv = (unsigned char *)"0123456789012345";
 
 void usage() {
@@ -156,7 +155,7 @@ void my_err(char *msg, ...) {
   va_end(argp);
 }
 
-void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote) {
+void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key) {
     /* data from tun/tap: read it, ecrypt it, and write it to the network */
     static unsigned long int n_tap2net = 0;
     char buffer[BUFSIZE];
@@ -201,7 +200,7 @@ void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote) {
 
 }
 
-void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote) {
+void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key) {
     /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
     uint16_t nread, nwrite, plength;
     unsigned char plain[BUFSIZE];
@@ -313,7 +312,7 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
   return;
 }
 
-void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote) {
+void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key) {
   /* use select() to handle two descriptors at once */
   int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 

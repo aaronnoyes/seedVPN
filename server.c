@@ -54,7 +54,6 @@
 
 int debug;
 char *progname;
-extern char *key;
 
 int main(int argc, char *argv[]) {
   
@@ -68,6 +67,7 @@ int main(int argc, char *argv[]) {
   int dg_sock, net_fd, serv_sock, s_sock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
+  unsigned char key[AES_KEYSIZE + 1];
   SSL_CTX *ctx;
   SSL *ssl;
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Connected via udp\n");
 
-  do_tun_loop(tap_fd, dg_sock, client_udp);
+  do_tun_loop(tap_fd, dg_sock, client_udp, key);
   
   return(0);
 }
