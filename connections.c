@@ -119,7 +119,7 @@ void add_n_route(char *ip, char *dev) {
     //ip address of remote must be masked with subnet first
     ip_addr = inet_addr(ip);
     ip_addr = ip_addr & netmask;
-    args[3] = inet_ntoa((struct in_addr *)ip_addr);
+    args[3] = inet_ntoa(*(struct in_addr *)&ip_addr);
 
     //fork to call the program
     //use execv instead of system because system spawns a shell
