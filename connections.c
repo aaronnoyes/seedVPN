@@ -111,9 +111,15 @@ void add_n_route(char *ip, char *dev) {
     //args are all static so as not to be abused
     char *rt_path = "/usr/sbin/route";
     char *args[] = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", "", NULL};
-    args[3] = ip;
     args[7] = dev;
     int r, pid;
+    unsigned int netmask = 0xFFFFFF00;
+    in_addr_t ip_addr;
+
+    //ip address of remote must be masked with subnet first
+    ip_addr = inet_addr(ip);
+    ip_addr = ip_addr & netmask;
+    args[3] = inet_ntoa((struct in_addr *)ip_addr);
 
     //fork to call the program
     //use execv instead of system because system spawns a shell
