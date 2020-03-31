@@ -353,7 +353,6 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
   sprintf(ifr.ifr_name, i_name);
 
   //set address
-  tun.sin_family = AF_INET;
   tun.sin_addr.s_addr = inet_addr(ip);
   memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
   r = ioctl(tap_fd, SIOCSIFADDR, (char *)&ifr);
