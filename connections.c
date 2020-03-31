@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+
 #include "connections.h"
 
 int get_sock(int port, int type, int prot) {
@@ -104,20 +107,22 @@ int tun_config(char *ip, char *i_name) {
 void add_n_route(char *ip, char *dev) {
     //args are all static so as not to be abused
     char *rt_path = "/usr/sbin/route";
-    char **args = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", ""};
+    char *args[] = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", ""};
     args[3] = ip;
     args[7] = dev;
-    int r;
+    int r, pid;
 
     //fork to call the program
     //use execv instead of system because system spawns a shell
-    if (fork() == 0) {
+    pid = fork();
+    if (pid == 0) {
         r = execv(rt_path, args);
         if (r < 0) {
             perror("Failed to add route\n");
             exit(1);
         }
     }
-
-    return;
+    else {
+        wait(&pid);
+    }
 }
