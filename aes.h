@@ -5,6 +5,7 @@
 
 //aes-256 keys are 256 bits or 32 bytes
 #define AES_KEYSIZE 32
+#define AES_IV_SIZE 16
 
 //encrypt_aes(4)
 // plain - message to be ecnrypted

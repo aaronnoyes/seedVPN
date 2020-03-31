@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
   int dg_sock, s_sock, net_fd;
   char buffer[BUFSIZE];
   unsigned char key[AES_KEYSIZE + 1];
+  unsigned char iv[AES_IV_SIZE + 1];
   SSL_CTX *ctx;
   SSL *ssl;
 
@@ -114,6 +115,10 @@ int main(int argc, char *argv[]) {
   SSL_read(ssl, key, AES_KEYSIZE + 1);
   do_debug("Received session key\n");
 
+  //get iv from server
+  SSL_read(ssl, iv, AES_IV_SIZE + 1);
+  do_debug("Received IV\n");
+
   //send buffer to server so that it gets our datagram socket
   if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp)) < 0) {
     perror("sendto()");
@@ -121,7 +126,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, dg_sock, server_udp, key);
+  do_tun_loop(tap_fd, dg_sock, server_udp, key, iv);
   
   return(0);
 }

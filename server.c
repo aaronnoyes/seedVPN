@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <sys/random.h>
 #include <fcntl.h>
 #include <arpa/inet.h> 
 #include <sys/select.h>
@@ -68,6 +69,7 @@ int main(int argc, char *argv[]) {
   socklen_t remotelen;
   char buffer[BUFSIZE];
   unsigned char key[AES_KEYSIZE + 1];
+  unsigned char iv[AES_IV_SIZE + 1];
   SSL_CTX *ctx;
   SSL *ssl;
 
@@ -114,8 +116,15 @@ int main(int argc, char *argv[]) {
   do_debug("SSL handshake complete\n");
 
   //generate key and send to client over SSL connection
-  strcpy(key, "01234567890123456789012345678901");
+  getrandom(key, AES_KEYSIZE, 0);
+  *(key+AES_KEYSIZE) = '\0';
   SSL_write(ssl, key, AES_KEYSIZE + 1);
+  do_debug("Sent session key\n");
+
+  //generate iv and send to client over SSL connection
+  getrandom(iv, AES_KEYSIZE, 0);
+  *(iv+AES_IV_SIZE) = '\0';
+  SSL_write(ssl, iv, AES_IV_SIZE + 1);
   do_debug("Sent session key\n");
 
   //get client's datagram socket info
@@ -125,7 +134,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Connected via udp\n");
 
-  do_tun_loop(tap_fd, dg_sock, client_udp, key);
+  do_tun_loop(tap_fd, dg_sock, client_udp, key, iv);
   
   return(0);
 }
