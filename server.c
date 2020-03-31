@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   progname = argv[0];
   
   parse_args(argc, argv, "i:p:uahdt:", if_name, remote_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
-  tun_config(tun_ip, if_name);
+  tun_config(tun_ip, tap_fd, if_name);
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);
