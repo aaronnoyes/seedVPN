@@ -62,8 +62,9 @@ int main(int argc, char *argv[]) {
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
   struct sockaddr_in server_tcp, server_udp;
-  char server_ip[16] = "";
-  char tun_ip[16] = "";
+  char server_ip[IP_AD_LEN] = "";
+  char tun_ip[IP_AD_LEN] = "";
+  char serv_vpn_ip[IP_AD_LEN] = "";
   unsigned short int port = PORT;
   int dg_sock, s_sock, net_fd, tunsock;
   char buffer[BUFSIZE];
@@ -76,6 +77,9 @@ int main(int argc, char *argv[]) {
 
   parse_args(argc, argv, "i:s:p:uahdt:", if_name, server_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
   tunsock = tun_config(tun_ip, if_name);
+  if (!tunsock) {
+    exit(1);
+  }
 
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
@@ -106,8 +110,10 @@ int main(int argc, char *argv[]) {
     abort();
   }
 
+  //do SSL handshake with the server
   ssl = ssl_handsh(s_sock, ctx, 0);
   if (!ssl) {
+    do_debug("SSL handshake failed\n");
     ERR_print_errors_fp(stderr);
     abort();
   }
@@ -120,6 +126,12 @@ int main(int argc, char *argv[]) {
   //get iv from server
   SSL_read(ssl, iv, AES_IV_SIZE + 1);
   do_debug("Received IV\n");
+
+  //read server VPN ip, get send cli vpn IP
+  SSL_read(ssl, serv_vpn_ip, IP_AD_LEN);
+  SSL_write(ssl, tun_ip, IP_AD_LEN);
+  add_n_route(serv_vpn_ip, if_name);
+  do_debug("Added server's VPN IP to routing table\n");
 
   //send buffer to server so that it gets our datagram socket
   if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp)) < 0) {

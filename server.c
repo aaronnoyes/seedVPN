@@ -63,8 +63,9 @@ int main(int argc, char *argv[]) {
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
   struct sockaddr_in client_tcp, client_udp;
-  char remote_ip[16] = "";
-  char tun_ip[16] = "";
+  char remote_ip[IP_AD_LEN] = "";
+  char tun_ip[IP_AD_LEN] = "";
+  char cli_vpn_ip[IP_AD_LEN] = "";
   unsigned short int port = PORT;
   int dg_sock, net_fd, serv_sock, s_sock, tunsock;
   socklen_t remotelen;
@@ -78,6 +79,9 @@ int main(int argc, char *argv[]) {
   
   parse_args(argc, argv, "i:p:uahdt:", if_name, remote_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
   tunsock = tun_config(tun_ip, if_name);
+  if (!tunsock) {
+    exit(1);
+  }
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);
@@ -128,6 +132,12 @@ int main(int argc, char *argv[]) {
   *(iv+AES_IV_SIZE) = '\0';
   SSL_write(ssl, iv, AES_IV_SIZE + 1);
   do_debug("Sent session key\n");
+
+  //send VPN ip to server, get client's vpn IP
+  SSL_write(ssl, tun_ip, IP_AD_LEN);
+  SSL_read(ssl, cli_vpn_ip, IP_AD_LEN);
+  add_n_route(cli_vpn_ip, if_name);
+  do_debug("Added client's VPN IP to routing table\n");
 
   //get client's datagram socket info
   if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {

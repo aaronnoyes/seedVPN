@@ -100,3 +100,24 @@ int tun_config(char *ip, char *i_name) {
 
   return sock;
 }
+
+void add_n_route(char *ip, char *dev) {
+    //args are all static so as not to be abused
+    char *rt_path = "/usr/sbin/route";
+    char **args = {"route", "add", "-net", "", "netmask", "255.255.255.0", "dev", ""};
+    args[3] = ip;
+    args[7] = dev;
+    int r;
+
+    //fork to call the program
+    //use execv instead of system because system spawns a shell
+    if (fork() == 0) {
+        r = execv(rt_path, args);
+        if (r < 0) {
+            perror("Failed to add route\n");
+            exit(1);
+        }
+    }
+
+    return;
+}
