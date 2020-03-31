@@ -83,7 +83,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server) 
     return ctx;
 }
 
-SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server) {
+SSL *ssl_handsh(int sock, SSL_CTX *ctx, int server) {
     BIO *bio;
     SSL *ssl;
     DH *dh;

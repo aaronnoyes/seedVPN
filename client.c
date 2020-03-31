@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     abort();
   }
 
-  ssl = ssl_do_handshake(s_sock, ctx, 0);
+  ssl = ssl_handsh(s_sock, ctx, 0);
   if (!ssl) {
     ERR_print_errors_fp(stderr);
     abort();

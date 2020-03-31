@@ -16,6 +16,6 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, int server);
 // sock - tcp socket connected to peer
 // ctx = SSL_CTX with parameters initialized
 // server - if this is a server, listen
-SSL *ssl_do_handshake(int sock, SSL_CTX *ctx, int server);
+SSL *ssl_handsh(int sock, SSL_CTX *ctx, int server);
 
 #endif

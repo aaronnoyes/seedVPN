@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("SSL context init complete\n");
 
-  ssl = ssl_do_handshake(s_sock, ctx, 1);
+  ssl = ssl_handsh(s_sock, ctx, 1);
   if (!ssl) {
     do_debug("SSL handshake failed\n");
     ERR_print_errors_fp(stderr);
