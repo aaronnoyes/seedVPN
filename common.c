@@ -370,7 +370,7 @@ int tun_config(char *ip, int tap_fd, char *i_name) {
   ifr.ifr_flags |= IFF_UP;
   r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr);
   if (r < 0) {
-    do_debug("Failed to set interface up errno: \n", errno);
+    do_debug("Failed to set interface up errno: %d\n", errno);
     return 0;
   }
 
