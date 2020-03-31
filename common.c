@@ -335,11 +335,11 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
     }
 
     if(FD_ISSET(tap_fd, &rd_set)){
-      tap2net(tap_fd, net_fd, remote);
+      tap2net(tap_fd, net_fd, remote, key);
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      net2tap(net_fd, tap_fd, remote);
+      net2tap(net_fd, tap_fd, remote, key);
     }
 
   }
