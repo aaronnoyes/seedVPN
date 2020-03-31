@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
   int header_len = IP_HDR_LEN;
   struct sockaddr_in client_tcp, client_udp;
   char remote_ip[16] = "";
+  char tun_ip[16] = "";
   unsigned short int port = PORT;
   int dg_sock, net_fd, serv_sock, s_sock;
   socklen_t remotelen;
@@ -75,7 +76,8 @@ int main(int argc, char *argv[]) {
 
   progname = argv[0];
   
-  parse_args(argc, argv, "i:p:uahd", if_name, remote_ip, &port, &flags, &header_len, &tap_fd);
+  parse_args(argc, argv, "i:p:uahdt:", if_name, remote_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
+  tun_config(tun_ip, tap_fd, if_name);
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);

@@ -63,6 +63,7 @@ int main(int argc, char *argv[]) {
   int header_len = IP_HDR_LEN;
   struct sockaddr_in server_tcp, server_udp;
   char server_ip[16] = "";
+  char tun_ip[16] = "";
   unsigned short int port = PORT;
   int dg_sock, s_sock, net_fd;
   char buffer[BUFSIZE];
@@ -73,7 +74,8 @@ int main(int argc, char *argv[]) {
 
   progname = argv[0];
 
-  parse_args(argc, argv, "i:s:p:uahd", if_name, server_ip, &port, &flags, &header_len, &tap_fd);
+  parse_args(argc, argv, "i:s:p:uahdt:", if_name, server_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
+  tun_config(tun_ip, tap_fd, if_name);
 
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);

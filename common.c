@@ -243,7 +243,7 @@ void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *k
 }
 
 
-void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd) {
+void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd, char *tun_ip) {
   int option;
 
   /* Check command line options */
@@ -270,6 +270,9 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
       case 'a':
         *flags = IFF_TAP;
         *header_len = ETH_HDR_LEN;
+        break;
+      case 't':
+        strncpy(tun_ip,optarg,15);
         break;
       default:
         my_err("Unknown option %c\n", option);
@@ -337,4 +340,39 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
     }
 
   }
+}
+
+int tun_config(char *ip, int tap_fd, char *i_name) {
+  struct ifreq ifr;
+  struct sockaddr_in tun;
+  int r;
+
+  //clear memory for address and req
+  memset(&tun, 0, sizeof(tun));
+  memset(&ifr, 0, sizeof(ifr));
+  sprintf(ifr.ifr_name, i_name);
+
+  //set address
+  tun.sin_family = AF_INET;
+  tun.sin_addr.s_addr = inet_addr(ip);
+  memcpy(&ifr.ifr_addr, &tun, sizeof(struct sockaddr));
+  r = ioctl(tap_fd, SIOCSIFADDR, (char *)&ifr);
+  if (!r) {
+    do_debug("Failed to set interface address\n");
+    return 0;
+  }
+
+  //reset request
+  memset(&ifr, 0, sizeof(ifr));
+  sprintf(ifr.ifr_name, i_name);
+
+  //set interface up
+  ifr.ifr_flags |= IFF_UP;
+  r = ioctl(tap_fd, SIOCSIFFLAGS, &ifr)
+  if (!r) {
+    do_debug("Failed to set interface up\n");
+    return 0;
+  }
+
+  return 1;
 }
