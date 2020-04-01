@@ -58,8 +58,7 @@ char *progname;
 int main(int argc, char *argv[]) {
   
   int tap_fd;
-  int flags = IFF_TUN;
-  char if_name[IFNAMSIZ] = "";
+  char if_name[IFNAMSIZ] = "tun0";
   int header_len = IP_HDR_LEN;
   struct sockaddr_in server_tcp, server_udp;
   char server_ip[IP_AD_LEN] = "";
@@ -75,7 +74,15 @@ int main(int argc, char *argv[]) {
 
   progname = argv[0];
 
-  parse_args(argc, argv, "i:s:p:uahdt:", if_name, server_ip, &port, &flags, &header_len, &tap_fd, tun_ip);
+  parse_args(argc, argv, "i:s:hdt:", server_ip, tun_ip);
+
+  //initialize tun interface
+  if ( (tap_fd = tun_alloc(if_name, IFF_TUN | IFF_NO_PI)) < 0 ) {
+    my_err("Error connecting to tun/tap interface %s!\n", if_name);
+    exit(1);
+  }
+  do_debug("Successfully connected to interface %s\n", if_name);
+
   tunsock = tun_config(tun_ip, if_name);
   if (!tunsock) {
     exit(1);

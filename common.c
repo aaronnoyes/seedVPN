@@ -52,13 +52,10 @@ char *progname;
 
 void usage() {
   fprintf(stderr, "Usage:\n");
-  fprintf(stderr, "%s -i <ifacename> [-s <serverIP>] [-p <port>] [-u|-a] [-d]\n", progname);
+  fprintf(stderr, "%s [-s <serverIP>] [-t <vpnIP>] [-d]\n", progname);
   fprintf(stderr, "%s -h\n", progname);
   fprintf(stderr, "\n");
-  fprintf(stderr, "-i <ifacename>: Name of interface to use (mandatory)\n");
-  fprintf(stderr, "-s <serverIP>: IP address of the server (-s) (mandatory)\n");
-  fprintf(stderr, "-p <port>: port to listen on (if run in server mode) or to connect to (in client mode), default 55555\n");
-  fprintf(stderr, "-u|-a: use TUN (-u, default) or TAP (-a)\n");
+  fprintf(stderr, "-s <serverIP>: IP address of the server (-s) (only for clients)\n");
   fprintf(stderr, "-d: outputs debug information while running\n");
   fprintf(stderr, "-h: prints this help text\n");
   exit(1);
@@ -244,7 +241,7 @@ void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *k
 }
 
 
-void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd, char *tun_ip) {
+void parse_args(int argc, char *argv[], char *optstr, char *remote_ip, char *tun_ip) {
   int option;
 
   /* Check command line options */
@@ -256,21 +253,8 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
       case 'h':
         usage();
         break;
-      case 'i':
-        strncpy(if_name,optarg,IFNAMSIZ-1);
-        break;
       case 's':
         strncpy(remote_ip,optarg,15);
-        break;
-      case 'p':
-        *port = atoi(optarg);
-        break;
-      case 'u':
-        *flags = IFF_TUN;
-        break;
-      case 'a':
-        *flags = IFF_TAP;
-        *header_len = ETH_HDR_LEN;
         break;
       case 't':
         strncpy(tun_ip,optarg,15);
@@ -288,24 +272,11 @@ void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remot
     my_err("Too many options!\n");
     usage();
   }
-
-  if(*if_name == '\0'){
-    my_err("Must specify interface name!\n");
-    usage();
-  }
   
   if ((strchr(optstr, 's')) && (*remote_ip == '\0')){
     my_err("Must specify server address!\n");
     usage();
   }
-
-  /* initialize tun/tap interface */
-  if ( (*tap_fd = tun_alloc(if_name, *flags | IFF_NO_PI)) < 0 ) {
-    my_err("Error connecting to tun/tap interface %s!\n", if_name);
-    exit(1);
-  }
-
-  do_debug("Successfully connected to interface %s\n", if_name);
 
   return;
 }

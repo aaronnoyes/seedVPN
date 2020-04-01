@@ -64,7 +64,7 @@ void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *k
 void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
 
 //parse command line arguments and perform setup
-void parse_args(int argc, char *argv[], char *optstr, char *if_name, char *remote_ip, unsigned short int *port, int *flags, int *header_len, int *tap_fd, char *tun_ip);
+void parse_args(int argc, char *argv[], char *optstr, char *remote_ip, char *tun_ip);
 
 //do_tun_loop(3)
 // tap_fd - file descriptor for tun interface
