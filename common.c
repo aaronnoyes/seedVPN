@@ -148,7 +148,7 @@ void my_err(char *msg, ...) {
   va_end(argp);
 }
 
-void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
+int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
     /* data from tun/tap: read it, ecrypt it, and write it to the network */
     static unsigned long int n_tap2net = 0;
     char buffer[BUFSIZE];
@@ -188,12 +188,13 @@ void tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *k
         perror("sendto()");
         exit(1);
     }
-
     do_debug("TAP2NET %lu: Written %d bytes to the network\n", n_tap2net, nwrite);
+
+    return 0;
 
 }
 
-void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
+int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
     /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
     uint16_t nread, nwrite, plength;
     unsigned char plain[BUFSIZE];
@@ -215,7 +216,7 @@ void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *k
 
     if(nread == 0) {
         /* ctrl-c at the other end */
-        return 0;
+        return 1;
     }
 
     //read the received hmac
@@ -239,6 +240,8 @@ void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *k
     else {
         do_debug("NET2TAP %lu: refused HMAC\n", n_net2tap);
     }
+
+    return 0;
 }
 
 
@@ -309,7 +312,7 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      if (!net2tap(net_fd, tap_fd, remote, key, iv)) {
+      if (net2tap(net_fd, tap_fd, remote, key, iv) == 1) {
         break;
       }
     }
