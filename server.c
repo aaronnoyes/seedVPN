@@ -60,12 +60,11 @@ int main(int argc, char *argv[]) {
   
   int tap_fd;
   char if_name[IFNAMSIZ] = "tun0";
-  int header_len = IP_HDR_LEN;
   struct sockaddr_in client_tcp, client_udp;
   char tun_ip[IP_AD_LEN] = "";
   char cli_vpn_ip[IP_AD_LEN] = "";
   unsigned short int port = PORT;
-  int dg_sock, net_fd, serv_sock, s_sock, tunsock;
+  int dg_sock, serv_sock, s_sock, tunsock;
   socklen_t remotelen;
   char buffer[BUFSIZE];
   unsigned char key[AES_KEYSIZE + 1];
@@ -156,7 +155,6 @@ int main(int argc, char *argv[]) {
 
   close(dg_sock);
   close(s_sock);
-  close(net_fd);
   close(tunsock);
   close(serv_sock);
   close(tap_fd);
