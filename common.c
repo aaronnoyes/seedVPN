@@ -326,15 +326,15 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
 
     if(FD_ISSET(tcp_sock, &rd_set)){
       SSL_read(ssl, ssl_buf, 10);
-      do_debug("From pper: %s\n", ssl_buf);
+      do_debug("From peer: %s\n", ssl_buf);
       memset(ssl_buf, 0, 10);
     }
 
     if(FD_ISSET(STDIN_FILENO, &rd_set)){
       fgets(stdin_buf, 10, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
-      memset(stdin_buf, 0, 10);
       SSL_write(ssl, stdin_buf, 10);
+      memset(stdin_buf, 0, 10);
     }
 
   }
