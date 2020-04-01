@@ -291,6 +291,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
   int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
   maxfd = (maxfd > tcp_sock)?maxfd:tcp_sock;
   char stdin_buf[10];
+  char ssl_buf[10];
 
   while(1) {
     int ret;
@@ -324,13 +325,15 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     }
 
     if(FD_ISSET(tcp_sock, &rd_set)){
-      do_debug("Data on TCP socket\n");
+      SSL_read(ssl, ssl, 10);
+      do_debug("From pper: %s\n", ssl_buf);
     }
 
     if(FD_ISSET(STDIN_FILENO, &rd_set)){
       fgets(stdin_buf, 10, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
       memset(stdin_buf, 0, 10);
+      SSL_write(ssl, stdin_buf, 10);
     }
 
   }
