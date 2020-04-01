@@ -23,8 +23,8 @@ aes.o: aes.c aes.h
 ssl.o: ssl.c ssl.h
 	$(CC) -I$(INC) -L$(LIB) -c ssl.c -lssl -lcrypto -ldl $(CFLAGS)
 
-connections.o: connections.c connections.h common.o
-	$(CC) -I$(INC) -L$(LIB) -c connections.c common.o -lcrypto -ldl $(CFLAGS)
+connections.o: connections.c connections.h
+	$(CC) -I$(INC) -L$(LIB) -c connections.c -lcrypto -ldl $(CFLAGS)
 
 clean:
 	rm -rf *.o server client
