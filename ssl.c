@@ -22,8 +22,6 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
 
 SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, char* cert, int server) {
     SSL_CTX *ctx;
-    FILE *f_dh_params;
-    DH *dh_2048 = NULL;
 
     //load library
     SSL_library_init();
@@ -40,25 +38,6 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, char* cert, 
     ctx = SSL_CTX_new(method);
     if (!ctx) {
         perror("Failed to get SSL ctx");
-        return NULL;
-    }
-
-    //get DH parameters
-    f_dh_params = fopen("dh_param_2048.pem", "r");
-
-    if (f_dh_params) {
-        dh_2048 = PEM_read_DHparams(f_dh_params, NULL, NULL, NULL);
-        fclose(f_dh_params);
-    } else {
-        printf("Could not open DH param file.\n");
-        return NULL;
-    }
-    if (dh_2048 == NULL) {
-        printf("Could read DH params from file.\n");
-        return NULL;
-    }
-    if (SSL_CTX_set_tmp_dh(ctx, dh_2048) != 1) {
-        printf("Failed to set DH params to context.\n");
         return NULL;
     }
 
