@@ -56,6 +56,7 @@ void usage() {
   fprintf(stderr, "%s -h\n", progname);
   fprintf(stderr, "\n");
   fprintf(stderr, "-s <serverIP>: IP address of the server (-s) (only for clients)\n");
+  fprintf(stderr, "-t <vpnID>: IP address in the VPN tunnel (-s) (required)\n");
   fprintf(stderr, "-d: outputs debug information while running\n");
   fprintf(stderr, "-h: prints this help text\n");
   exit(1);
@@ -212,10 +213,10 @@ void net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *k
     }
     do_debug("NET2TAP %lu: Read %d bytes from the network\n", n_net2tap, nread);
 
-    // if(nread == 0) {
-    //     /* ctrl-c at the other end */
-    //     break;
-    // }
+    if(nread == 0) {
+        /* ctrl-c at the other end */
+        return 0;
+    }
 
     //read the received hmac
     memcpy(rec_hmac, buffer, HMAC_SIZE);
@@ -308,7 +309,9 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      net2tap(net_fd, tap_fd, remote, key, iv);
+      if (!net2tap(net_fd, tap_fd, remote, key, iv)) {
+        break;
+      }
     }
 
   }
