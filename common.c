@@ -319,11 +319,11 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      net2tap(net_fd, tap_fd, remote, key, iv) == 1);
+      net2tap(net_fd, tap_fd, remote, key, iv);
     }
 
     if(FD_ISSET(tcp_sock, &rd_set)){
-      if (SSL_read(ssl, ssl_buf, CMD_LEN)) == 0 {
+      if (SSL_read(ssl, ssl_buf, CMD_LEN) == 0) {
         break;
       }
       do_debug("From peer: %s\n", ssl_buf);
