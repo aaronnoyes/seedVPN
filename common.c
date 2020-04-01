@@ -327,7 +327,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     }
 
     if(FD_ISSET(STDIN_FILENO, &rd_set)){
-      fgets(stdin_buf, 10);
+      fgets(stdin_buf, 10, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
       memset(stdin_buf, 0, 10);
     }
