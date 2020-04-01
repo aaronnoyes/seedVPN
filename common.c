@@ -290,8 +290,8 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
   /* use select() to handle two descriptors at once */
   int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
   maxfd = (maxfd > tcp_sock)?maxfd:tcp_sock;
-  char stdin_buf[10];
-  char ssl_buf[10];
+  char stdin_buf[CMD_LEN];
+  char ssl_buf[CMD_LEN];
 
   while(1) {
     int ret;
@@ -319,13 +319,13 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      if (net2tap(net_fd, tap_fd, remote, key, iv) == 1) {
-        break;
-      }
+      net2tap(net_fd, tap_fd, remote, key, iv) == 1);
     }
 
     if(FD_ISSET(tcp_sock, &rd_set)){
-      SSL_read(ssl, ssl_buf, 10);
+      if (SSL_read(ssl, ssl_buf, CMD_LEN)) == 0 {
+        break;
+      }
       do_debug("From peer: %s\n", ssl_buf);
       memset(ssl_buf, 0, 10);
     }
@@ -333,7 +333,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     if(FD_ISSET(STDIN_FILENO, &rd_set)){
       fgets(stdin_buf, 10, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
-      SSL_write(ssl, stdin_buf, 10);
+      SSL_write(ssl, stdin_buf, CMD_LEN);
       memset(stdin_buf, 0, 10);
     }
 

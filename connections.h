@@ -3,6 +3,7 @@
 
 #define NOPORT 0
 #define IP_AD_LEN 16
+#define CMD_LEN 128
 
 //get_dg_sock(1)
 // port - port to bind to, if NOPORT do not bind
