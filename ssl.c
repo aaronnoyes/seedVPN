@@ -22,7 +22,6 @@ static int get_keyfile_pass(char *buf, int num, int rwflag, void *userdata) {
 
 SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, char* cert, int server) {
     SSL_CTX *ctx;
-    SSL_METHOD *method;
     FILE *f_dh_params;
     DH *dh_2048 = NULL;
 
@@ -32,7 +31,7 @@ SSL_CTX *ssl_init_ctx(char *cafile , char *keyfile, char *password, char* cert, 
 
     //set up context using SSL/TLS
     //openSSL will negitiate the best to use
-    method = TLS_method();
+    const SSL_METHOD *method = TLS_method();
     if (!method) {
         perror("Failed to load SSL method");
         return NULL;

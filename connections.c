@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <stdio.h>
 #include <net/if.h>
@@ -9,6 +10,7 @@
 #include <sys/types.h>
 #include <errno.h>
 
+#include "common.h"
 #include "connections.h"
 
 int get_sock(int port, int type, int prot) {

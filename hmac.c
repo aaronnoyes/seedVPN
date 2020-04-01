@@ -10,8 +10,14 @@
 //returns md context already set up with private key
 EVP_MD_CTX *setup_digest(char *key) {
     EVP_MD_CTX* ctx = NULL;
-    EVP_MD* md = NULL;
     EVP_PKEY* pkey = NULL;
+
+    //get sha256 digest
+    const EVP_MD* md = EVP_sha256();
+    if (!md) {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
 
     //init digest context
     ctx = EVP_MD_CTX_create();
@@ -20,12 +26,6 @@ EVP_MD_CTX *setup_digest(char *key) {
         abort();
     }
 
-    //get sha256 digest
-    md = EVP_sha256();
-    if (!md) {
-        ERR_print_errors_fp(stderr);
-        abort();
-    }
 
     //set private key
     pkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, key, strlen(key));
