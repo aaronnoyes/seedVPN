@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Connected via udp\n");
 
-  do_tun_loop(tap_fd, dg_sock, client_udp, key, iv);
+  do_tun_loop(tap_fd, dg_sock, s_sock, ssl, client_udp, key, iv);
 
   close(dg_sock);
   close(s_sock);

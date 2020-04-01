@@ -285,16 +285,21 @@ void parse_args(int argc, char *argv[], char *optstr, char *remote_ip, char *tun
   return;
 }
 
-void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
+void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
   /* use select() to handle two descriptors at once */
   int maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
+  maxfd = (maxfd > tcp_sock)?maxfd:tcp_sock;
+  char stdin_buf[10];
 
   while(1) {
     int ret;
     fd_set rd_set;
 
     FD_ZERO(&rd_set);
-    FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
+    FD_SET(tap_fd, &rd_set);
+    FD_SET(net_fd, &rd_set);
+    FD_SET(tcp_sock, &rd_set);
+    FD_SET(STDIN_FILENO, &rd_set);
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
@@ -315,6 +320,16 @@ void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned cha
       if (net2tap(net_fd, tap_fd, remote, key, iv) == 1) {
         break;
       }
+    }
+
+    if(FD_ISSET(tcp_sock, &rd_set)){
+      do_debug("Data on TCP socket\n");
+    }
+
+    if(FD_ISSET(STDIN_FILENO, &rd_set)){
+      fgets(stdin_buf, 10);
+      do_debug("From stdin: %s\n", stdin_buf);
+      memset(stdin_buf, 0, 10);
     }
 
   }

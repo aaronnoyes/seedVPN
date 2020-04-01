@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Sent blank buffer to connect to server\n");
     
-  do_tun_loop(tap_fd, dg_sock, server_udp, key, iv);
+  do_tun_loop(tap_fd, s_sock, ssl, dg_sock, server_udp, key, iv);
 
   close(dg_sock);
   close(s_sock);

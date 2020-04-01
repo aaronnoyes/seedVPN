@@ -70,6 +70,6 @@ void parse_args(int argc, char *argv[], char *optstr, char *remote_ip, char *tun
 // tap_fd - file descriptor for tun interface
 // net_fd - file descriptor for network adapter
 // remote - socket address of remote computer
-void do_tun_loop(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
+void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
 
 #endif
