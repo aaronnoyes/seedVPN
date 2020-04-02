@@ -23,7 +23,7 @@ int get_sock(int port, int type, int prot) {
     }
 
     //server should bind to a local port
-    if (port) {
+    if (port >= 0) {
         /* avoid EADDRINUSE error on bind() */
         if(setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0){
             perror("setsockopt()");

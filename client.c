@@ -141,10 +141,6 @@ int main(int argc, char *argv[]) {
   }
   do_debug("Connected to server via udp\n");
 
-  //test
-  sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp));
-  do_debug("send via udp\n");
-
   do_tun_loop(tap_fd, dg_sock, s_sock, ssl, server_udp, key, iv);
 
   close(dg_sock);

@@ -1,7 +1,8 @@
 #ifndef MCON_H
 #define MCON_H
 
-#define NOPORT 0
+#define NOPORT -1
+#define ANYPORT 0
 #define IP_AD_LEN 16
 
 //get_dg_sock(1)

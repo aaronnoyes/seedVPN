@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);
-  dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
+  dg_sock = get_sock(ANYPORT, SOCK_DGRAM, IPPROTO_UDP);
   
   remotelen = sizeof(client_tcp);
   memset(&client_tcp, 0, remotelen);
@@ -156,10 +156,6 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
   do_debug("Sent blank buffer to connect to client's UDP port\n");
-
-  //test
-  recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen);
-  do_debug("rec via udp\n");
 
   do_tun_loop(tap_fd, dg_sock, s_sock, ssl, client_udp, key, iv);
 
