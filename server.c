@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
   do_debug("Sent blank buffer to connect to client's UDP port\n");
 
   //test
-  recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0)
+  recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0);
   do_debug("rec via udp\n");
 
   do_tun_loop(tap_fd, dg_sock, s_sock, ssl, client_udp, key, iv);
