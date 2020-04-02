@@ -2,6 +2,8 @@
 #define COMMON_H
 
 #include <openssl/ssl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 /* buffer for reading from tun/tap interface, must be >= 1500 */
 #define BUFSIZE 2000   

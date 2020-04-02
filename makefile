@@ -6,10 +6,10 @@ LIB=/usr/local/ssl/lib/
 all: server client common.o hmac.o aes.o ssl.o connections.o commands.o
 
 server: server.c common.o aes.o hmac.o ssl.o connections.o commands.o
-	$(CC) -I$(INC) -L$(LIB) -o server server.c common.o aes.o hmac.o ssl.o connections.o commands -lssl -lcrypto -ldl $(CFLAGS)
+	$(CC) -I$(INC) -L$(LIB) -o server server.c common.o aes.o hmac.o ssl.o connections.o commands.o -lssl -lcrypto -ldl $(CFLAGS)
 
 client: client.c common.o aes.o hmac.o ssl.o connections.o commands.o
-	$(CC) -I$(INC) -L$(LIB) -o client client.c common.o aes.o hmac.o ssl.o connections.o commands -lssl -lcrypto -ldl $(CFLAGS)
+	$(CC) -I$(INC) -L$(LIB) -o client client.c common.o aes.o hmac.o ssl.o connections.o commands.o -lssl -lcrypto -ldl $(CFLAGS)
 
 common.o: common.c common.h
 	$(CC) -I$(INC) -L$(LIB) -c common.c -lcrypto -ldl $(CFLAGS)
