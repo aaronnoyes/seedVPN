@@ -23,7 +23,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
 
     //parse command, check correct length
     if (!strcmp(cmd_type, "key")) {
-        if(strlen(arg) != AES_KEYSIZE) {
+        if(strlen(arg) == AES_KEYSIZE) {
             val_to_change = key;
             corr_len = AES_KEYSIZE;
         }
@@ -32,8 +32,8 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
             return 0;
         }
     }
-    else if (!strcmp(cmd_type, "key")) {
-        if(strlen(arg) != AES_IV_SIZE) {
+    else if (!strcmp(cmd_type, "iv")) {
+        if(strlen(arg) == AES_IV_SIZE) {
             val_to_change = iv;
             corr_len = AES_IV_SIZE;
         }
