@@ -19,7 +19,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
 
     //get argument
     buf = strtok(NULL, " "); 
-    strncpy(arg, buf, CMD_T_LEN);
+    strncpy(arg, buf, CMD_LEN);
 
     //parse command, check correct length
     if (!strcmp(cmd_type, "key")) {
