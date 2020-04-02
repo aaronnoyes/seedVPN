@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
   unsigned char iv[AES_IV_SIZE + 1];
   SSL_CTX *ctx;
   SSL *ssl;
+  socklen_t remotelen;
 
   progname = argv[0];
 
@@ -134,7 +135,7 @@ int main(int argc, char *argv[]) {
   do_debug("Added server's VPN IP to routing table\n");
 
   //get server's datagram socket info
-  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {
+  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, &remotelen) < 0) {
       perror("recvfrom()");
       exit(1);
   }
