@@ -1,5 +1,6 @@
 #include <string.h>
 #include "commands.h"
+#include "common.h"
 #include "openssl/ssl.h"
 #include "aes.h"
 
