@@ -47,6 +47,7 @@
 #include "aes.h"
 #include "hmac.h"
 #include "connections.h"
+#include "commands.h"
 
 int debug;
 char *progname;
@@ -322,19 +323,23 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
       net2tap(net_fd, tap_fd, remote, key, iv);
     }
 
+    //info from SSL peer
     if(FD_ISSET(tcp_sock, &rd_set)){
       if (SSL_read(ssl, ssl_buf, CMD_LEN) == 0) {
         break;
       }
       do_debug("From peer: %s\n", ssl_buf);
-      memset(ssl_buf, 0, 10);
+      parse_command(ssl_buf, key, iv, 0, ssl);
+      memset(ssl_buf, 0, CMD_LEN);
     }
 
+    //something typed on console
     if(FD_ISSET(STDIN_FILENO, &rd_set)){
-      fgets(stdin_buf, 10, stdin);
+      fgets(stdin_buf, CMD_LEN, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
       SSL_write(ssl, stdin_buf, CMD_LEN);
-      memset(stdin_buf, 0, 10);
+      parse_command(stdin_buf, key, iv, 1, ssl);
+      memset(stdin_buf, 0, CMD_LEN);
     }
 
   }
