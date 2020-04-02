@@ -88,19 +88,13 @@ int main(int argc, char *argv[]) {
   }
 
   s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
-  dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
+  dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
 
   //location of server's tcp port
   memset(&server_tcp, 0, sizeof(server_tcp));
   server_tcp.sin_family = AF_INET;
   server_tcp.sin_addr.s_addr = inet_addr(server_ip);
   server_tcp.sin_port = htons(port);
-
-  //location of server's udp port
-  memset(&server_udp, 0, sizeof(server_udp));
-  server_udp.sin_family = AF_INET;
-  server_udp.sin_addr.s_addr = inet_addr(server_ip);
-  server_udp.sin_port = htons(port + 1);
 
   //establish tcp connection with server
   if (connect(s_sock, (struct sockaddr*) &server_tcp, sizeof(server_tcp)) < 0){
@@ -139,12 +133,12 @@ int main(int argc, char *argv[]) {
   add_n_route(serv_vpn_ip, if_name);
   do_debug("Added server's VPN IP to routing table\n");
 
-  //send buffer to server so that it gets our datagram socket
-  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, sizeof(server_udp)) < 0) {
-    perror("sendto()");
-    exit(1);
+  //get server's datagram socket info
+  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {
+      perror("recvfrom()");
+      exit(1);
   }
-  do_debug("Sent blank buffer to connect to server\n");
+  do_debug("Connected to server via udp\n");
     
   do_tun_loop(tap_fd, dg_sock, s_sock, ssl, server_udp, key, iv);
 

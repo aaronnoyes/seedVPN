@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
   //open a a stream socket for SSL, and a datagram socket for tunnel
   serv_sock = get_sock(port, SOCK_STREAM, 0);
-  dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
+  dg_sock = get_sock(NOPORT, SOCK_DGRAM, IPPROTO_UDP);
   
   remotelen = sizeof(client_tcp);
   memset(&client_tcp, 0, remotelen);
@@ -144,12 +144,18 @@ int main(int argc, char *argv[]) {
   add_n_route(cli_vpn_ip, if_name);
   do_debug("Added client's VPN IP to routing table\n");
 
-  //get client's datagram socket info
-  if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, &remotelen) < 0) {
-      perror("recvfrom()");
-      exit(1);
+  //location of client's udp port
+  memset(&client_udp, 0, sizeof(client_udp));
+  client_udp.sin_family = AF_INET;
+  client_udp.sin_addr.s_addr = client_tcp.sin_addr.s_addr;
+  client_udp.sin_port = htons(port + 1);
+
+  //send buffer to client so that it gets our datagram socket
+  if (sendto(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&client_udp, sizeof(client_udp)) < 0) {
+    perror("sendto()");
+    exit(1);
   }
-  do_debug("Connected via udp\n");
+  do_debug("Sent blank buffer to connect to client's UDP port\n");
 
   do_tun_loop(tap_fd, dg_sock, s_sock, ssl, client_udp, key, iv);
 
