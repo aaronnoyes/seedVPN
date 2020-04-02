@@ -27,6 +27,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
             corr_len = AES_KEYSIZE;
         }
         else {
+            do_debug("%s failed, wrong length\n", cmd_type);
             return 0;
         }
     }
@@ -36,10 +37,12 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
             corr_len = AES_IV_SIZE;
         }
         else {
+            do_debug("%s failed, wrong length\n", cmd_type);
             return 0;
         }
     }
     else {
+        do_debug("%s failed, unknown arg\n", cmd_type);
         return 0;
     }
 
@@ -58,6 +61,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
         SSL_write(ssl, conf, CONF_LEN);
     }
 
+    do_debug("%s success!\n", cmd_type);
     return 1;
 
 }
