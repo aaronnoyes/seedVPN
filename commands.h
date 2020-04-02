@@ -1,6 +1,8 @@
 #ifndef SSL_COM_H
 # define SSL_COM_H
 
+#include "openssl/ssl.h"
+
 #define CMD_LEN 128
 #define CMD_T_LEN 16
 #define CONF_LEN 5

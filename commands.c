@@ -6,8 +6,8 @@
 
 int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
     char *buf;
-    char *cmd_type[CMD_T_LEN];
-    char *arg[CMD_LEN - CMD_T_LEN];
+    char cmd_type[CMD_T_LEN];
+    char arg[CMD_LEN - CMD_T_LEN];
     char *val_to_change;
     int corr_len;
     char *conf = "conf";
