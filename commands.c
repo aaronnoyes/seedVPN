@@ -11,7 +11,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
     char arg[CMD_LEN - CMD_T_LEN];
     char *val_to_change;
     int corr_len;
-    char *conf = "conf";
+    char conf[CMD_LEN] = "conf";
 
     //get command
     buf = strtok(command, " ");
