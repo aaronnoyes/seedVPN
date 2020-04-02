@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  s_sock = get_sock(NOPORT, SOCK_STREAM, 0);
+  s_sock = get_sock(ANYPORT, SOCK_STREAM, 0);
   dg_sock = get_sock(port + 1, SOCK_DGRAM, IPPROTO_UDP);
 
   //location of server's tcp port
