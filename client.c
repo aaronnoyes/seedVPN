@@ -134,6 +134,7 @@ int main(int argc, char *argv[]) {
   add_n_route(serv_vpn_ip, if_name);
   do_debug("Added server's VPN IP to routing table\n");
 
+  remotelen = sizeof(server_udp);
   //get server's datagram socket info
   if (recvfrom(dg_sock, buffer, BUFSIZE, 0, (struct sockaddr*)&server_udp, &remotelen) < 0) {
       perror("recvfrom()");
