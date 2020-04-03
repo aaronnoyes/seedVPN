@@ -53,7 +53,7 @@
 #define KEYFILE "./ssl/server.key"
 #define CERTFILE "./ssl/server.crt"
 
-#define NAME_FORM "tun%d";
+#define NAME_FORM "tun%d"
 
 int debug;
 char *progname;
