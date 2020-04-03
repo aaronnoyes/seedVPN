@@ -133,17 +133,17 @@ int main(int argc, char *argv[]) {
       SSL_write(ssl, iv, AES_IV_SIZE + 1);
       do_debug("Sent iv\n");
 
-      tunsock = tun_config(tun_ip, if_name);
-      if (!tunsock) {
-        exit(1);
-      }
-
       //initialize tun interface
       if ( (tap_fd = tun_alloc(if_name, IFF_TUN | IFF_NO_PI)) < 0 ) {
         my_err("Error connecting to tun/tap interface %s!\n", if_name);
         exit(1);
       }
       do_debug("Successfully connected to interface %s\n", if_name);
+
+      tunsock = tun_config(tun_ip, if_name);
+      if (!tunsock) {
+        exit(1);
+      }
 
       //send VPN ip to server, get client's vpn IP
       SSL_write(ssl, tun_ip, IP_AD_LEN);
