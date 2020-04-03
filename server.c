@@ -53,6 +53,8 @@
 #define KEYFILE "./ssl/server.key"
 #define CERTFILE "./ssl/server.crt"
 
+#define NAME_FORM = "tun%d";
+
 int debug;
 char *progname;
 
@@ -60,7 +62,6 @@ int main(int argc, char *argv[]) {
   
   int tap_fd;
   char if_name[IFNAMSIZ] = "";
-  char if_name_format = "tun%d";
   struct sockaddr_in client_tcp, client_udp;
   char tun_ip[IP_AD_LEN] = "";
   char cli_vpn_ip[IP_AD_LEN] = "";
@@ -101,7 +102,7 @@ int main(int argc, char *argv[]) {
 
     if (fork() == 0) {
 
-      snprintf(if_name, IFNAMSIZ-4, if_name_format, num_cli++);
+      snprintf(if_name, IFNAMSIZ, NAME_FORM, num_cli++);
 
       //establish SSL connection
       ctx = ssl_init_ctx(CA_FILE, KEYFILE, SERV_KEY_PASS, CERTFILE, 1);
