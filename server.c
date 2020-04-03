@@ -133,18 +133,6 @@ int main(int argc, char *argv[]) {
       SSL_write(ssl, iv, AES_IV_SIZE + 1);
       do_debug("Sent iv\n");
 
-      //send VPN ip to server, get client's vpn IP
-      SSL_write(ssl, tun_ip, IP_AD_LEN);
-      SSL_read(ssl, cli_vpn_ip, IP_AD_LEN);
-      add_n_route(cli_vpn_ip, if_name);
-      do_debug("Added client's VPN IP to routing table\n");
-
-      //location of client's udp port
-      memset(&client_udp, 0, sizeof(client_udp));
-      client_udp.sin_family = AF_INET;
-      client_udp.sin_addr.s_addr = client_tcp.sin_addr.s_addr;
-      client_udp.sin_port = htons(port + 1);
-
       tunsock = tun_config(tun_ip, if_name);
       if (!tunsock) {
         exit(1);
@@ -156,6 +144,18 @@ int main(int argc, char *argv[]) {
         exit(1);
       }
       do_debug("Successfully connected to interface %s\n", if_name);
+
+      //send VPN ip to server, get client's vpn IP
+      SSL_write(ssl, tun_ip, IP_AD_LEN);
+      SSL_read(ssl, cli_vpn_ip, IP_AD_LEN);
+      add_n_route(cli_vpn_ip, if_name);
+      do_debug("Added client's VPN IP to routing table\n");
+
+      //location of client's udp port
+      memset(&client_udp, 0, sizeof(client_udp));
+      client_udp.sin_family = AF_INET;
+      client_udp.sin_addr.s_addr = client_tcp.sin_addr.s_addr;
+      client_udp.sin_port = htons(port + 1);
 
       dg_sock = get_sock(ANYPORT, SOCK_DGRAM, IPPROTO_UDP);
 
