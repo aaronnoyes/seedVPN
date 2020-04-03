@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
       getrandom(iv, AES_KEYSIZE, 0);
       *(iv+AES_IV_SIZE) = '\0';
       SSL_write(ssl, iv, AES_IV_SIZE + 1);
-      do_debug("Sent session key\n");
+      do_debug("Sent iv\n");
 
       //send VPN ip to server, get client's vpn IP
       SSL_write(ssl, tun_ip, IP_AD_LEN);
@@ -145,17 +145,17 @@ int main(int argc, char *argv[]) {
       client_udp.sin_addr.s_addr = client_tcp.sin_addr.s_addr;
       client_udp.sin_port = htons(port + 1);
 
+      tunsock = tun_config(tun_ip, if_name);
+      if (!tunsock) {
+        exit(1);
+      }
+
       //initialize tun interface
       if ( (tap_fd = tun_alloc(if_name, IFF_TUN | IFF_NO_PI)) < 0 ) {
         my_err("Error connecting to tun/tap interface %s!\n", if_name);
         exit(1);
       }
       do_debug("Successfully connected to interface %s\n", if_name);
-
-      tunsock = tun_config(tun_ip, if_name);
-      if (!tunsock) {
-        exit(1);
-      }
 
       dg_sock = get_sock(ANYPORT, SOCK_DGRAM, IPPROTO_UDP);
 
