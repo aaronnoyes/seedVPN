@@ -59,13 +59,13 @@ void my_err(char *msg, ...);
 // tap_fd - file descriptor for tap interface
 // sock_fd - file descriptor for socket to write to
 // remote - socket of remote
-int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
+int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv, char *hmac_key);
 
 //net2tap
 // tap_fd - file descriptor for tap interface
 // sock_fd - file descriptor for socket to write to
 // remote - socket of remote
-int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv);
+int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv, char *hmac_key);
 
 //parse command line arguments and perform setup
 void parse_args(int argc, char *argv[], char *optstr, char *remote_ip, char *tun_ip);

@@ -7,6 +7,6 @@
 #define CMD_T_LEN 16
 #define CONF_LEN 5
 
-int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl);
+int parse_command(char *command, char *key, char *iv, char *hmac_key,int sender, SSL *ssl);
 
 #endif

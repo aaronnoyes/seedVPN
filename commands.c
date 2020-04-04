@@ -5,7 +5,7 @@
 #include "aes.h"
 
 
-int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
+int parse_command(char *command, char *key, char *iv, char *hmac_key, int sender, SSL *ssl) {
     char *buf;
     char cmd_type[CMD_T_LEN];
     char arg[CMD_LEN - CMD_T_LEN];
@@ -25,6 +25,16 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
     if (!strcmp(cmd_type, "key")) {
         if(strlen(arg) == AES_KEYSIZE) {
             val_to_change = key;
+            corr_len = AES_KEYSIZE;
+        }
+        else {
+            do_debug("%s failed, wrong length\n", cmd_type);
+            return 0;
+        }
+    }
+    else if (!strcmp(cmd_type, "hmac")) {
+        if(strlen(arg) == AES_KEYSIZE) {
+            val_to_change = hmac_key;
             corr_len = AES_KEYSIZE;
         }
         else {
@@ -62,7 +72,7 @@ int parse_command(char *command, char *key, char *iv, int sender, SSL *ssl) {
         SSL_write(ssl, conf, CONF_LEN);
     }
 
-    do_debug("%s success!\n", cmd_type);
+    do_debug("%s change successful!\n", cmd_type);
     return 1;
 
 }

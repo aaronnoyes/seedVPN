@@ -150,7 +150,7 @@ void my_err(char *msg, ...) {
   va_end(argp);
 }
 
-int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
+int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv, char *hmac_key) {
     /* data from tun/tap: read it, ecrypt it, and write it to the network */
     static unsigned long int n_tap2net = 0;
     char buffer[BUFSIZE];
@@ -166,7 +166,7 @@ int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *ke
     do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", n_tap2net, nread);
 
     //sign HMAC of message
-    hmac_len = sign_hmac(buffer, nread, hmac, key);
+    hmac_len = sign_hmac(buffer, nread, hmac, hmac_key);
     if (!hmac_len) {
         ERR_print_errors_fp(stderr);
         abort();
@@ -196,7 +196,7 @@ int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *ke
 
 }
 
-int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv) {
+int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv, char *hmac_key) {
     /* data from the network: read it, decrypt it, and write it to the tun/tap interface. */
     uint16_t nread, nwrite, plength;
     unsigned char plain[BUFSIZE];
@@ -233,7 +233,7 @@ int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *ke
     do_debug("NET2TAP %lu: decrypted %d bytes from cipher\n", n_net2tap, plain_len);
 
     //if the hmac matches the plaintext, move it along
-    if (verify_hmac(plain, plain_len, rec_hmac, key)) {
+    if (verify_hmac(plain, plain_len, rec_hmac, hmac_key)) {
         do_debug("NET2TAP %lu: verified HMAC\n", n_net2tap);
         /* plaintext contains decrypted packet, write it into the tun/tap interface */ 
         nwrite = cwrite(tap_fd, plain, plain_len);
@@ -293,6 +293,9 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
   maxfd = (maxfd > tcp_sock)?maxfd:tcp_sock;
   char stdin_buf[CMD_LEN];
   char ssl_buf[CMD_LEN];
+  char hmac_key[AES_KEYSIZE + 1];
+
+  strcpy(hmac_key, key);
 
   while(1) {
     int ret;
@@ -316,11 +319,11 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     }
 
     if(FD_ISSET(tap_fd, &rd_set)){
-      tap2net(tap_fd, net_fd, remote, key, iv);
+      tap2net(tap_fd, net_fd, remote, key, iv, hmac_key);
     }
 
     if(FD_ISSET(net_fd, &rd_set)){
-      net2tap(net_fd, tap_fd, remote, key, iv);
+      net2tap(net_fd, tap_fd, remote, key, iv, hmac_key);
     }
 
     //info from SSL peer
@@ -329,7 +332,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
         break;
       }
       do_debug("From peer: %s\n", ssl_buf);
-      parse_command(ssl_buf, key, iv, 0, ssl);
+      parse_command(ssl_buf, key, iv, hmac_key, 0, ssl);
       memset(ssl_buf, 0, CMD_LEN);
     }
 
@@ -338,7 +341,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
       fgets(stdin_buf, CMD_LEN, stdin);
       do_debug("From stdin: %s\n", stdin_buf);
       SSL_write(ssl, stdin_buf, CMD_LEN);
-      parse_command(stdin_buf, key, iv, 1, ssl);
+      parse_command(stdin_buf, key, iv, hmac_key, 1, ssl);
       memset(stdin_buf, 0, CMD_LEN);
     }
 
