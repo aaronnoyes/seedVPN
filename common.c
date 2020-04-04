@@ -155,7 +155,7 @@ void my_err(char *msg, ...) {
 void print_n_sensitive(int len, char *arr) {
 #ifdef DANGEROUSDEBUG
   int i;
-  char curr = arr;
+  char *curr = arr;
 
   for(i = 0; i < len; i++) {
     printf("0x%2x ", curr++);
