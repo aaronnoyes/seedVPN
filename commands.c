@@ -15,15 +15,21 @@ int parse_command(char *command, char *key, char *iv, char *hmac_key, int sender
 
     //get command
     buf = strtok(command, " ");
+    if (!buf) {
+        return -1;
+    }
     strncpy(cmd_type, buf, CMD_T_LEN);
 
     //get argument
     buf = strtok(NULL, " "); 
+    if (!buf) {
+        return -1;
+    }
     strncpy(arg, buf, CMD_LEN);
 
     //parse command, check correct length
     if (!strcmp(cmd_type, "key")) {
-        if(strlen(arg) == AES_KEYSIZE) {
+        if(strlen(arg) == AES_KEYSIZE + 1) {
             val_to_change = key;
             corr_len = AES_KEYSIZE;
         }
@@ -33,7 +39,7 @@ int parse_command(char *command, char *key, char *iv, char *hmac_key, int sender
         }
     }
     else if (!strcmp(cmd_type, "hmac")) {
-        if(strlen(arg) == AES_KEYSIZE) {
+        if(strlen(arg) == AES_KEYSIZE + 1) {
             val_to_change = hmac_key;
             corr_len = AES_KEYSIZE;
         }
@@ -43,7 +49,7 @@ int parse_command(char *command, char *key, char *iv, char *hmac_key, int sender
         }
     }
     else if (!strcmp(cmd_type, "iv")) {
-        if(strlen(arg) == AES_IV_SIZE) {
+        if(strlen(arg) == AES_IV_SIZE + 1) {
             val_to_change = iv;
             corr_len = AES_IV_SIZE;
         }
@@ -72,7 +78,7 @@ int parse_command(char *command, char *key, char *iv, char *hmac_key, int sender
         SSL_write(ssl, conf, CONF_LEN);
     }
 
-    do_debug("%s change successful!\n", cmd_type);
+    do_debug("%s changed to %s\n", cmd_type, arg);
     return 1;
 
 }
