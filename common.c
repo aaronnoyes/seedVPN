@@ -135,9 +135,9 @@ void do_debug(char *msg, ...){
   va_list argp;
   
   if(debug){
-	va_start(argp, msg);
-	vfprintf(stderr, msg, argp);
-	va_end(argp);
+    va_start(argp, msg);
+    vfprintf(stderr, msg, argp);
+    va_end(argp);
   }
 }
 
@@ -157,12 +157,13 @@ void print_n_sensitive(int len, char *arr) {
   int i;
   char *curr = arr;
 
-  for(i = 0; i < len; i++) {
-    printf("0x%hhx ", *(curr++));
+  if (debug) {
+    for(i = 0; i < len; i++) {
+        printf("0x%hhx ", *(curr++));
+    }
+
+      printf("\n");
   }
-
-  printf("\n");
-
 #endif
   return;
 }
