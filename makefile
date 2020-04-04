@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g
+CFLAGS=-g -DDANGEROUSDEBUG
 INC=/usr/local/ssl/include/
 LIB=/usr/local/ssl/lib/
 

@@ -150,6 +150,23 @@ void my_err(char *msg, ...) {
   va_end(argp);
 }
 
+//print out hex bytes of a given length
+//this is called with potential user input, should not be compiled into production code
+void print_n_sensitive(int len, char *arr) {
+#ifdef DANGEROUSDEBUG
+  int i;
+  char curr = arr;
+
+  for(i = 0; i < len; i++) {
+    printf("0x%2x ", curr++);
+  }
+
+  printf("\n");
+
+#endif
+  return;
+}
+
 int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *key, unsigned char *iv, char *hmac_key) {
     /* data from tun/tap: read it, ecrypt it, and write it to the network */
     static unsigned long int n_tap2net = 0;
@@ -163,7 +180,8 @@ int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *ke
     nread = cread(tap_fd, buffer, BUFSIZE);
 
     n_tap2net++;
-    do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", n_tap2net, nread);
+    do_debug("TAP2NET %lu: Read %d bytes from the TUN interface\n", n_tap2net, nread);
+    print_n_sensitive(nread, buffer);
 
     //sign HMAC of message
     hmac_len = sign_hmac(buffer, nread, hmac, hmac_key);
@@ -172,6 +190,7 @@ int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *ke
         abort();
     }
     do_debug("TAP2NET %lu: signed hmac\n", n_tap2net);
+    print_n_sensitive(hmac_len, hmac);
 
     //encrypt plaintext
     cipher_len = encrypt_aes(buffer, nread, cipher, key, iv);
@@ -180,6 +199,7 @@ int tap2net(int tap_fd, int net_fd, struct sockaddr_in remote, unsigned char *ke
         abort();
     }
     do_debug("TAP2NET %lu: encrypted %d cipher bytes\n", n_tap2net, cipher_len);
+    print_n_sensitive(cipher_len, cipher);
 
     //copy hmac then cipher to buffer
     memcpy(buffer, hmac, HMAC_SIZE);
@@ -215,6 +235,7 @@ int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *ke
         exit(1);
     }
     do_debug("NET2TAP %lu: Read %d bytes from the network\n", n_net2tap, nread);
+    print_n_sensitive(nread, buffer);
 
     if(nread == 0) {
         /* ctrl-c at the other end */
@@ -223,6 +244,8 @@ int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *ke
 
     //read the received hmac
     memcpy(rec_hmac, buffer, HMAC_SIZE);
+    do_debug("NET2TAP %lu: Read HMAC from peer\n", n_net2tap);
+    print_n_sensitive(HMAC_SIZE, rec_hmac);
 
     //decrypt incoming network traffic
     plain_len = decrypt_aes(buffer + HMAC_SIZE, nread - HMAC_SIZE, plain, key, iv);
@@ -231,6 +254,7 @@ int net2tap(int net_fd, int tap_fd, struct sockaddr_in remote, unsigned char *ke
         abort();
     }
     do_debug("NET2TAP %lu: decrypted %d bytes from cipher\n", n_net2tap, plain_len);
+    print_n_sensitive(plain_len, plain);
 
     //if the hmac matches the plaintext, move it along
     if (verify_hmac(plain, plain_len, rec_hmac, hmac_key)) {
