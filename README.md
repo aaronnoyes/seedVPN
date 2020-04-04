@@ -11,7 +11,7 @@ The report associated with this is in `paper.pdf`. The report concerns implement
 The quickest way to get everything up and running is to run `make` followed by `start-serv.sh` and `start-cli.sh` on the respective machines, then commands can be tried to see functionality. Using this method, run `ping 10.0.5.1` from the client in a second terminal tab or window to see the server respond. Debug output is availible by default. Better explanaiton is provided below.
 
 ## VM Setup
-MISSING DOWNLOAD INSTRUCTIONS
+VMs can be downloaded from [this link](https://myumanitoba-my.sharepoint.com/:u:/g/personal/noyesa_myumanitoba_ca/EdMF0zIl_I1PnCdJc9SmxSsBwH9-ho9a4fpLUsSqUaeg8A?e=ZueDGW)
 
 Two virtual machines are used for demonstration, both using a distrubution of [lubuntu](https://lubuntu.me) which is designed to be light weight and helps to aid with the size of the virtual machine submission.
 
