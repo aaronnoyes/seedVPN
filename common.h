@@ -55,6 +55,10 @@ void do_debug(char *msg, ...);
  **************************************************************************/
 void my_err(char *msg, ...);
 
+//print n bytes
+//has no effect unless compiled with DANGEROUSDEBUG defined
+void print_n_sensitive(int len, char *arr);
+
 //tap2net
 // tap_fd - file descriptor for tap interface
 // sock_fd - file descriptor for socket to write to

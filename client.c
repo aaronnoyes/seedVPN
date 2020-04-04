@@ -123,10 +123,12 @@ int main(int argc, char *argv[]) {
   //get key from server
   SSL_read(ssl, key, AES_KEYSIZE + 1);
   do_debug("Received session key\n");
+  print_n_sensitive(AES_KEYSIZE, key);
 
   //get iv from server
   SSL_read(ssl, iv, AES_IV_SIZE + 1);
   do_debug("Received IV\n");
+  print_n_sensitive(AES_IV_SIZE, iv);
 
   //read server VPN ip, get send cli vpn IP
   SSL_read(ssl, serv_vpn_ip, IP_AD_LEN);

@@ -126,12 +126,14 @@ int main(int argc, char *argv[]) {
       *(key+AES_KEYSIZE) = '\0';
       SSL_write(ssl, key, AES_KEYSIZE + 1);
       do_debug("Sent session key\n");
+      print_n_sensitive(AES_KEYSIZE, key);
 
       //generate iv and send to client over SSL connection
       getrandom(iv, AES_KEYSIZE, 0);
       *(iv+AES_IV_SIZE) = '\0';
       SSL_write(ssl, iv, AES_IV_SIZE + 1);
       do_debug("Sent iv\n");
+      print_n_sensitive(AES_IV_SIZE, iv);
 
       //initialize tun interface
       if ( (tap_fd = tun_alloc(if_name, IFF_TUN | IFF_NO_PI)) < 0 ) {
