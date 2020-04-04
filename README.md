@@ -1,6 +1,6 @@
 # seedVPN
 
-A Linux-based VPN written according to [this SEED lab](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Networking/VPN/).
+A Linux-based VPN written according to [this SEED lab](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Networking/VPN/). Cryptographic operations depend on [OpenSSL version 1.1.1](https://www.openssl.org/source/).
 
 ## About
 
@@ -8,14 +8,16 @@ The report associated with this is in `paper.pdf`. The report concerns implement
 
 ## Quick Start
 
-The quickest way to get everything up and running is to tun `start-serv.sh` and `start-cli.sh` on the respective machines, then commands can be tried to see functionality. Using this method, run `ping 10.0.5.1` from the client in a second terminal tab or window to see the server respond. Debug output is availible by default.
+The quickest way to get everything up and running is to run `make` followed by `start-serv.sh` and `start-cli.sh` on the respective machines, then commands can be tried to see functionality. Using this method, run `ping 10.0.5.1` from the client in a second terminal tab or window to see the server respond. Debug output is availible by default. Better explanaiton is provided below.
 
 ## VM Setup
 MISSING DOWNLOAD INSTRUCTIONS
 
+Two virtual machines are used for demonstration, both using a distrubution of [lubuntu](https://lubuntu.me) which is designed to be light weight and helps to aid with the size of the virtual machine submission.
+
 Unzip the VM bundle and `cd` into it. From here run `./setup.sh` which will import the client and server VMs and configure them on a new NATNetwork. Both VMs will also be launched. This ensures that the VirtualBox DHCP service assigns consistent IP addresses to the client and server machines, making the program easier to demonstrate. Both VMs are already configured to start `qterminal` on boot and `cd` into the project folder.
 
-One VM is named client, and the other is named server, but the program runs exactly the same way.
+One VM is named client, and the other is named server, but the program runs exactly the same way aside from the automated scripts.
 
 For ease of use, both VMs use the password `4580`.
 
