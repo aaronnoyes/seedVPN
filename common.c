@@ -353,6 +353,7 @@ void do_tun_loop(int tap_fd, int net_fd, int tcp_sock, SSL *ssl, struct sockaddr
     //info from SSL peer
     if(FD_ISSET(tcp_sock, &rd_set)){
       if (SSL_read(ssl, ssl_buf, CMD_LEN) == 0) {
+        do_debug("Peer disconnected\n");
         break;
       }
       do_debug("From peer: %s\n", ssl_buf);
