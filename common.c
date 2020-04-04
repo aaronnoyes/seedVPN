@@ -158,7 +158,7 @@ void print_n_sensitive(int len, char *arr) {
   char *curr = arr;
 
   for(i = 0; i < len; i++) {
-    printf("0x%02x ", *(curr++));
+    printf("0x%hhx ", *(curr++));
   }
 
   printf("\n");
